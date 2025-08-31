@@ -44,4 +44,6 @@ module.exports.loop = function () {
             roleBuilder.run(creep);
         }
     }
+
+    // Can I recycle creeps? Check tomorrow
 }

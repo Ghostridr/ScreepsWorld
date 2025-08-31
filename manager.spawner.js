@@ -9,5 +9,5 @@ const roleNames = [
 // Default desired counts for each role
 const desiredCounts = {};
 roleNames.forEach(role => {
-	desiredCounts[role] = 2;
+	desiredCounts[role] = 2; // Default; re-evaluate later
 });
