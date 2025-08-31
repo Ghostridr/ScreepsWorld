@@ -11,7 +11,6 @@
 - *Changed root JS files:*
   - main.js
 
-
 ### fix: add newline at end of file for TODO comment for auto-spawning logic**
 
 - *Commit:* [6160107fd8ea189491e86dfe61f8ad9758e7211e](https://github.com/Ghostridr/ScreepsWorld/commit/6160107fd8ea189491e86dfe61f8ad9758e7211e)
