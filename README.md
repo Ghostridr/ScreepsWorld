@@ -1,5 +1,7 @@
 # ScreepsWorld
 
+[![Changelog Tracker](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg?branch=master&event=check_run)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml)
+
 *A learning-first JavaScript repo built by playing the MMO programming game **Screeps**.*
 
 > **Goal:** Use Screeps as a practical lab to learn modern JavaScript by designing a clean, testable bot architecture. This repo favors understanding, debugging habits, and data-driven design over “shipping a clever bot.”
