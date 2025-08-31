@@ -1,0 +1,83 @@
+name: Changelog Tracker
+
+on:
+  push:
+    paths:
+      - '/*'
+  pull_request:
+    paths:
+      - '/*'
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed root JS files
+        id: root_changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF=${{ github.event.pull_request.base.sha }}
+            HEAD_REF=${{ github.event.pull_request.head.sha }}
+          else
+            BASE_REF=${{ github.event.before }}
+            HEAD_REF=${{ github.sha }}
+          fi
+          CHANGED_FILES=$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^[^/]+\.js$' || true)
+          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+      - name: Format changelog entry
+        id: changelog_entry
+        if: steps.root_changes.outputs.changed_files != ''
+        run: |
+          DATE=$(date '+%Y-%m-%d %H:%M:%S')
+          COMMIT=${{ github.sha }}
+          AUTHOR=${{ github.actor }}
+          TITLE=$(git log -1 --pretty=%s)
+          BODY=$(git log -1 --pretty=%b)
+          # Find PR number if event is PR
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            PR_LINK="[PR #$PR_NUMBER](https://github.com/${{ github.repository }}/pull/$PR_NUMBER)"
+          else
+            PR_LINK=""
+          fi
+          # Find issue references in commit title
+          ISSUE_LINKS=""
+          for issue in $(echo "$TITLE" | grep -oE '#[0-9]+'); do
+            num=$(echo $issue | tr -d '#')
+            ISSUE_LINKS="$ISSUE_LINKS [Issue $issue](https://github.com/${{ github.repository }}/issues/$num)"
+          done
+          echo "---" >> changelog.tmp
+          echo "**$TITLE** $PR_LINK $ISSUE_LINKS" >> changelog.tmp
+          if [ -n "$BODY" ]; then
+            echo "" >> changelog.tmp
+            echo "$BODY" >> changelog.tmp
+          fi
+          echo "" >> changelog.tmp
+          echo "*Commit:* [$COMMIT](https://github.com/${{ github.repository }}/commit/$COMMIT)" >> changelog.tmp
+          echo "*Author:* $AUTHOR" >> changelog.tmp
+          echo "*Date:* $DATE" >> changelog.tmp
+          echo "*Changed root JS files:*" >> changelog.tmp
+          for file in ${{ steps.root_changes.outputs.changed_files }}; do
+            echo "  - $file" >> changelog.tmp
+          done
+          echo "---" >> changelog.tmp
+
+      - name: Append changelog entry to CHANGELOG.md
+        if: steps.root_changes.outputs.changed_files != ''
+        run: |
+          cat changelog.tmp >> CHANGELOG.md
+
+      - name: Commit and push CHANGELOG.md
+        if: github.event_name == 'push' && steps.root_changes.outputs.changed_files != ''
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: update CHANGELOG.md for root file changes"
+          git push
