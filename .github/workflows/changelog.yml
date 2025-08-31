@@ -10,9 +10,11 @@ concurrency:
 
 on:
   push:
+    # Only run when root-level *.js change (GitHub path filter + in-script check)
     paths:
       - '*.js'
   pull_request:
+    # Run when PR is closed; we'll only act if it was merged AND it touched root *.js
     types: [closed]
     paths:
       - '*.js'
@@ -37,7 +39,12 @@ jobs:
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
             BASE_REF="${{ github.event.pull_request.base.sha }}"
-            HEAD_REF="${{ github.event.pull_request.head.sha }}"
+            # Prefer merge commit when available, else fall back to PR head
+            if [ -n "${{ github.event.pull_request.merge_commit_sha }}" ] && [ "${{ github.event.pull_request.merge_commit_sha }}" != "null" ]; then
+              HEAD_REF="${{ github.event.pull_request.merge_commit_sha }}"
+            else
+              HEAD_REF="${{ github.event.pull_request.head.sha }}"
+            fi
           else
             BASE_REF="${{ github.event.before }}"
             HEAD_REF="${{ github.sha }}"
@@ -78,18 +85,15 @@ jobs:
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
             COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
-            # Fallback for squash/rebase merges where merge_commit_sha can be null
             if [ -z "${COMMIT:-}" ] || [ "${COMMIT:-null}" = "null" ]; then
               COMMIT="${{ github.event.pull_request.head.sha }}"
             fi
             PR_NUMBER="${{ github.event.pull_request.number }}"
             TITLE="${{ github.event.pull_request.title }}"
             BODY="${{ github.event.pull_request.body }}"
-            PR_LINK="[PR #$PR_NUMBER](https://github.com/${REPO}/pull/$PR_NUMBER)"
           else
             COMMIT="${{ github.sha }}"
             PR_NUMBER=""
-            PR_LINK=""
             TITLE="$(git log -1 --pretty=%s)"
             BODY="$(git log -1 --pretty=%b)"
           fi
@@ -117,7 +121,6 @@ jobs:
             echo "body<<EOF"
             echo "$BODY"
             echo "EOF"
-            echo "pr_link=$PR_LINK"
             echo "commit=$COMMIT"
             echo "author=$AUTHOR"
             echo "date=$DATE"
@@ -137,23 +140,23 @@ jobs:
           set -euo pipefail
 
           : > changelog.tmp
-          echo "---" >> changelog.tmp
-          echo "**${{ steps.payload.outputs.title }}** ${{ steps.payload.outputs.pr_link }}" >> changelog.tmp
-          if [ -n "${{ steps.payload.outputs.body }}" ]; then
-            echo "" >> changelog.tmp
-            printf "%s\n" "${{ steps.payload.outputs.body }}" >> changelog.tmp
-          fi
+          # Heading: "### <commit/PR title>"
+          echo "### ${{ steps.payload.outputs.title }}" >> changelog.tmp
           echo "" >> changelog.tmp
-          echo "*Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
-          echo "*Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
-          echo "*Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
-          echo "*Changed root JS files:*" >> changelog.tmp
 
+          # Bullet lines exactly as requested; no body text, no PR link, no separators
+          echo "- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
+          echo "- *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
+          echo "- *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
+          echo "- *Changed root JS files:*" >> changelog.tmp
+
+          # List changed files with two-space indent then dash
           while IFS= read -r file; do
             [ -n "$file" ] && echo "  - $file" >> changelog.tmp
           done <<< "${{ steps.root_changes.outputs.changed_files }}"
 
-          echo "---" >> changelog.tmp
+          # Blank line between entries
+          echo "" >> changelog.tmp
 
       - name: Ensure CHANGELOG.md skeleton and append sections
         if: |
