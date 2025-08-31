@@ -130,4 +130,5 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git add CHANGELOG.md
           git commit -m "chore: update CHANGELOG.md for root file changes"
+          git pull --rebase origin master
           git push
