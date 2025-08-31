@@ -13,14 +13,12 @@ on:
     # Only run when any JS files change (filter to ROOT *.js in-script)
     paths:
       - '*.js'
-      - '**/*.js'
     paths-ignore:
       - 'CHANGELOG.md'
   pull_request:
     types: [closed]
     paths:
       - '*.js'
-      - '**/*.js'
   workflow_dispatch:
 
 jobs:
