@@ -68,10 +68,50 @@ jobs:
           done
           echo "---" >> changelog.tmp
 
-      - name: Append changelog entry to CHANGELOG.md
+      - name: Ensure CHANGELOG.md structure and append entries
         if: steps.root_changes.outputs.changed_files != ''
         run: |
-          cat changelog.tmp >> CHANGELOG.md
+          # Ensure CHANGELOG.md starts with "# Changelog"
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "## Commits" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "## Issues (closed)" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "## Pull Requests (approved)" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          else
+            if ! grep -q "^# Changelog" CHANGELOG.md; then
+              echo -e "# Changelog\n$(cat CHANGELOG.md)" > CHANGELOG.md
+            fi
+            for section in "## Commits" "## Issues (closed)" "## Pull Requests (approved)"; do
+              if ! grep -q "^$section" CHANGELOG.md; then
+                echo -e "$section\n" >> CHANGELOG.md
+              fi
+            done
+          fi
+
+          # Insert new commit entry under ## Commits
+          awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+
+          # If this is a pull request and it was merged/approved, add to Pull Requests section
+          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            PR_NUMBER=${{ github.event.pull_request.number }}
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+            PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
+            PR_ENTRY="### [$PR_TITLE]($PR_URL) by @$PR_AUTHOR\n- PR #$PR_NUMBER was approved and merged.\n"
+            awk '/^## Pull Requests \(approved\)/{print;print "";system("echo \"$PR_ENTRY\"");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+          fi
+
+          # If this commit closes issues, add to Issues section
+          CLOSED_ISSUES=$(git log -1 --pretty=%s | grep -oE '#[0-9]+' | tr -d '#')
+          for ISSUE in $CLOSED_ISSUES; do
+            ISSUE_URL="https://github.com/${{ github.repository }}/issues/$ISSUE"
+            ISSUE_ENTRY="### [Issue #$ISSUE]($ISSUE_URL) closed\n"
+            awk '/^## Issues \(closed\)/{print;print "";system("echo \"$ISSUE_ENTRY\"");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+          done
 
       - name: Commit and push CHANGELOG.md
         if: github.event_name == 'push' && steps.root_changes.outputs.changed_files != ''
