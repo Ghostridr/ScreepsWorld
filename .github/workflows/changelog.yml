@@ -141,14 +141,14 @@ jobs:
 
           : > changelog.tmp
           # Heading exactly like your sample: "### <title>"
-          echo "### ${{ steps.payload.outputs.title }}" >> changelog.tmp
+          echo "### 🟢 ${{ steps.payload.outputs.title }}" >> changelog.tmp
           echo "" >> changelog.tmp
 
           # Bullet lines exactly as requested (no PR link, no body, no separators)
-          echo "- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
-          echo "- *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
-          echo "- *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
-          echo "- *Changed root JS files:*" >> changelog.tmp
+          echo "- 🟢 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
+          echo "- 👤 *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
+          echo "- 📅 *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
+          echo "- 📦 *Changed root JS files:*" >> changelog.tmp
 
           # List changed files with two-space indent then dash
           while IFS= read -r file; do
@@ -206,7 +206,7 @@ jobs:
             PR_TITLE="${{ github.event.pull_request.title }}"
             PR_AUTHOR="${{ github.event.pull_request.user.login }}"
             PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
-            PR_ENTRY="$(printf "### [%s](%s) by @%s\n- PR #%s was approved and merged.\n" "$PR_TITLE" "$PR_URL" "$PR_AUTHOR" "$PR_NUMBER")"
+            PR_ENTRY="$(printf "### 🚀 [%s](%s) by @%s\n- 🔀 PR #%s was approved and merged. ✅\n" "$PR_TITLE" "$PR_URL" "$PR_AUTHOR" "$PR_NUMBER")"
             if ! grep -Fq "$PR_ENTRY" CHANGELOG.md; then
               awk '/^## Pull Requests \(approved\)/{print;print "";system("printf \"%s\" \"$PR_ENTRY\"");next}1' CHANGELOG.md > .pr.tmp && mv .pr.tmp CHANGELOG.md
             fi
@@ -215,7 +215,7 @@ jobs:
           # Add closed issues referenced via closing keywords (idempotent)
           for ISSUE in ${{ steps.payload.outputs.closed_issues }}; do
             ISSUE_URL="https://github.com/${{ github.repository }}/issues/$ISSUE"
-            ISSUE_ENTRY="$(printf "### [Issue #%s](%s) closed\n" "$ISSUE" "$ISSUE_URL")"
+            ISSUE_ENTRY="$(printf "### ✅ [Issue #%s](%s) closed 🛠️\n" "$ISSUE" "$ISSUE_URL")"
             if ! grep -Fq "$ISSUE_ENTRY" CHANGELOG.md; then
               awk '/^## Issues \(closed\)/{print;print "";system("printf \"%s\" \"$ISSUE_ENTRY\"");next}1' CHANGELOG.md > .issues.tmp && mv .issues.tmp CHANGELOG.md
             fi

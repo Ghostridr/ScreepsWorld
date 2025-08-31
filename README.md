@@ -49,53 +49,53 @@
 
 Each milestone validates for ~50–100 ticks unless noted. Boxes are targets for this repo.
 
-* [ ] **M0 — Environment & Habits**
-  * Build: `src/main.js` loop skeleton, `src/util.logger.js`, deploy flow.
-  * Verify: end-of-tick log shows `Game.time` & `Game.cpu.getUsed()` trending predictably.
+* [ ] 🛠️ **M0 — Environment & Habits**
+  * ⚙️ Build: `src/main.js` loop skeleton, `src/util.logger.js`, deploy flow.
+  * ✅ Verify: end-of-tick log shows `Game.time` & `Game.cpu.getUsed()` trending predictably.
 
-* [ ] **M1 — Memory Hygiene & Schema**
-  * Build: `src/util.memory.js` (GC dead creeps/stale keys), `Memory.version` + migrations.
-  * Verify: Memory growth stabilizes; logs show removed creep memory + migration applied.
+* [ ] 🧠 **M1 — Memory Hygiene & Schema**
+  * 🧹 Build: `src/util.memory.js` (GC dead creeps/stale keys), `Memory.version` + migrations.
+  * ✅ Verify: Memory growth stabilizes; logs show removed creep memory + migration applied.
 
-* [ ] **M2 — Harvester FSM**
-  * Build: `src/role.harvester.js` with `gather`/`deliver` states.
-  * Verify: state logs; no flip-flop within 5 ticks at boundaries.
+* [ ] 🌾 **M2 — Harvester FSM**
+  * 🤖 Build: `src/role.harvester.js` with `gather`/`deliver` states.
+  * ✅ Verify: state logs; no flip-flop within 5 ticks at boundaries.
 
-* [ ] **M3 — SpawnManager v1**
-  * Build: `src/manager.spawner.js` ensures ≥1 harvester when energy ≥300.
-  * Verify: auto-respawn after death; stable counts.
+* [ ] 🧬 **M3 — SpawnManager v1**
+  * 🏭 Build: `src/manager.spawner.js` ensures ≥1 harvester when energy ≥300.
+  * ✅ Verify: auto-respawn after death; stable counts.
 
-* [ ] **M4 — Upgrader & Builder**
-  * Build: `src/role.upgrader.js`, `src/role.builder.js`.
-  * Verify: controller progress; builders idle only if no sites.
+* [ ] 🏗️ **M4 — Upgrader & Builder**
+  * 🔼 Build: `src/role.upgrader.js`, `src/role.builder.js`.
+  * ✅ Verify: controller progress; builders idle only if no sites.
 
-* [ ] **M5 — Role Router & Creep Registry**
-  * Build: `src/driver.roles.js` dispatcher; `src/services.creeps.js` indexing by role.
-  * Verify: per-role counts; no exceptions when a role is absent.
+* [ ] 🗂️ **M5 — Role Router & Creep Registry**
+  * 🛣️ Build: `src/driver.roles.js` dispatcher; `src/services.creeps.js` indexing by role.
+  * ✅ Verify: per-role counts; no exceptions when a role is absent.
 
-* [ ] **M6 — Pathing & Caching**
-  * Build: `src/services.pathing.js` (path cache, stuck detection).
-  * Verify: CPU delta improves; cache hit rate >30% on busy ticks.
+* [ ] 🗺️ **M6 — Pathing & Caching**
+  * 🧭 Build: `src/services.pathing.js` (path cache, stuck detection).
+  * ✅ Verify: CPU delta improves; cache hit rate >30% on busy ticks.
 
-* [ ] **M7 — Per-RCL Build Plan**
-  * Build: `src/constants.plans.js` with planner emitting build intents per RCL.
-  * Verify: on RCL change, intents valid; no illegal placements.
+* [ ] 🏢 **M7 — Per-RCL Build Plan**
+  * 📝 Build: `src/constants.plans.js` with planner emitting build intents per RCL.
+  * ✅ Verify: on RCL change, intents valid; no illegal placements.
 
-* [ ] **M8 — TaskManager v1 (Priority Queue)**
-  * Build: `src/manager.task.js` central queue; simple priority + claim.
-  * Verify: higher utilization; fewer idle ticks.
+* [ ] 📋 **M8 — TaskManager v1 (Priority Queue)**
+  * 🗃️ Build: `src/manager.task.js` central queue; simple priority + claim.
+  * ✅ Verify: higher utilization; fewer idle ticks.
 
-* [ ] **M9 — Tower Logic & Defense**
-  * Build: `src/manager.tower.js` heal → repair (cap) → attack priorities.
-  * Verify: tower CPU under budget; repair caps respected.
+* [ ] 🗼 **M9 — Tower Logic & Defense**
+  * 🛡️ Build: `src/manager.tower.js` heal → repair (cap) → attack priorities.
+  * ✅ Verify: tower CPU under budget; repair caps respected.
 
-* [ ] **M10 — Remote Mining Starter**
-  * Build: reserver + hauler basics; vision/route checks.
-  * Verify: external room reserved; energy returns without timeouts.
+* [ ] 🚀 **M10 — Remote Mining Starter**
+  * 🏞️ Build: reserver + hauler basics; vision/route checks.
+  * ✅ Verify: external room reserved; energy returns without timeouts.
 
-* [ ] **M11 — Production Polish**
-  * Build: log levels; feature flags; error boundary wrapper; metrics dump.
-  * Verify: toggleable logs; stable CPU trend.
+* [ ] ✨ **M11 — Production Polish**
+  * 🧩 Build: log levels; feature flags; error boundary wrapper; metrics dump.
+  * ✅ Verify: toggleable logs; stable CPU trend.
 
 > As a rule, every feature includes: (1) a tiny test, (2) a log message with structured fields, (3) a success metric to watch.
 
