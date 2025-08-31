@@ -1,138 +1,240 @@
 name: Changelog Tracker
 
+permissions:
+  contents: write
+  pull-requests: write
+
 concurrency:
-  group: changelog-update
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
   push:
+    # Only run when any JS files change (filter to ROOT *.js in-script)
     paths:
       - '*.js'
+      - '**/*.js'
+    paths-ignore:
+      - 'CHANGELOG.md'
   pull_request:
+    types: [closed]
     paths:
       - '*.js'
+      - '**/*.js'
+  workflow_dispatch:
 
 jobs:
   changelog:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Get changed root JS files
+      - name: Determine changed ROOT .js files
         id: root_changes
+        shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_REF=${{ github.event.pull_request.base.sha }}
-            HEAD_REF=${{ github.event.pull_request.head.sha }}
-          else
-            BASE_REF=${{ github.event.before }}
-            HEAD_REF=${{ github.sha }}
-          fi
-          CHANGED_FILES=$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^[^/]+\.js$' || true)
-          echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          EVENT_NAME="${{ github.event_name }}"
 
-      - name: Format changelog entry
-        id: changelog_entry
-        if: steps.root_changes.outputs.changed_files != ''
-        run: |
-          DATE=$(date '+%Y-%m-%d %H:%M:%S')
-          COMMIT=${{ github.sha }}
-          AUTHOR=${{ github.actor }}
-          TITLE=$(git log -1 --pretty=%s)
-          BODY=$(git log -1 --pretty=%b)
-          # Find PR number if event is PR
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER=${{ github.event.pull_request.number }}
-            PR_LINK="[PR #$PR_NUMBER](https://github.com/${{ github.repository }}/pull/$PR_NUMBER)"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            BASE_REF="${{ github.event.pull_request.base.sha }}"
+            HEAD_REF="${{ github.event.pull_request.head.sha }}"
           else
-            PR_LINK=""
+            BASE_REF="${{ github.event.before }}"
+            HEAD_REF="${{ github.sha }}"
           fi
-          # Find issue references in commit title
-          ISSUE_LINKS=""
-          for issue in $(echo "$TITLE" | grep -oE '#[0-9]+'); do
-            num=$(echo $issue | tr -d '#')
-            ISSUE_LINKS="$ISSUE_LINKS [Issue $issue](https://github.com/${{ github.repository }}/issues/$num)"
-          done
+
+          # Compute changed files and keep ONLY root-level *.js (no slashes)
+          CHANGED_FILES="$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^[^/]+\.js$' || true)"
+
+          {
+            echo "changed_files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Detected root JS changes:"
+            echo "$CHANGED_FILES"
+          else
+            echo "No root-level .js changes detected."
+          fi
+
+      - name: Prepare changelog entry payload
+        id: payload
+        if: |
+          steps.root_changes.outputs.changed_files != '' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+          )
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DATE="$(date '+%Y-%m-%d %H:%M:%S')"
+          AUTHOR="${{ github.actor }}"
+          REPO="${{ github.repository }}"
+          EVENT_NAME="${{ github.event_name }}"
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            TITLE="${{ github.event.pull_request.title }}"
+            BODY="${{ github.event.pull_request.body }}"
+            PR_LINK="[PR #$PR_NUMBER](https://github.com/${REPO}/pull/$PR_NUMBER)"
+            MERGED="${{ github.event.pull_request.merged }}"
+          else
+            COMMIT="${{ github.sha }}"
+            PR_NUMBER=""
+            PR_LINK=""
+            TITLE="$(git log -1 --pretty=%s)"
+            BODY="$(git log -1 --pretty=%b)"
+            MERGED=""
+          fi
+
+          # Collect issue numbers closed by this commit/PR via closing keywords
+          # (fix(es|ed)?|close(s|d)?|resolve(s|d)?) #123
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            TEXT="$TITLE"$'\n'"$BODY"
+          else
+            TEXT="$(git log -1 --pretty=%s%n%b)"
+          fi
+
+          CLOSED_ISSUES="$(printf '%s' "$TEXT" \
+            | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
+            | grep -oE '#[0-9]+' \
+            | tr -d '#' \
+            | sort -u || true)"
+
+          {
+            echo "title<<EOF"
+            echo "$TITLE"
+            echo "EOF"
+            echo "body<<EOF"
+            echo "$BODY"
+            echo "EOF"
+            echo "pr_link=$PR_LINK"
+            echo "commit=$COMMIT"
+            echo "author=$AUTHOR"
+            echo "date=$DATE"
+            echo "closed_issues=$CLOSED_ISSUES"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build entry file (Commits section)
+        id: entry
+        if: |
+          steps.root_changes.outputs.changed_files != '' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+          )
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          : > changelog.tmp
           echo "---" >> changelog.tmp
-          echo "**$TITLE** $PR_LINK $ISSUE_LINKS" >> changelog.tmp
-          if [ -n "$BODY" ]; then
+          echo "**${{ steps.payload.outputs.title }}** ${{ steps.payload.outputs.pr_link }}" >> changelog.tmp
+          if [ -n "${{ steps.payload.outputs.body }}" ]; then
             echo "" >> changelog.tmp
-            echo "$BODY" >> changelog.tmp
+            # Body may contain markdown; write as-is
+            printf "%s\n" "${{ steps.payload.outputs.body }}" >> changelog.tmp
           fi
           echo "" >> changelog.tmp
-          echo "*Commit:* [$COMMIT](https://github.com/${{ github.repository }}/commit/$COMMIT)" >> changelog.tmp
-          echo "*Author:* $AUTHOR" >> changelog.tmp
-          echo "*Date:* $DATE" >> changelog.tmp
+          echo "*Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
+          echo "*Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
+          echo "*Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
           echo "*Changed root JS files:*" >> changelog.tmp
-          for file in ${{ steps.root_changes.outputs.changed_files }}; do
-            echo "  - $file" >> changelog.tmp
-          done
+          while IFS= read -r file; do
+            [ -n "$file" ] && echo "  - $file" >> changelog.tmp
+          done << 'EOF_FILES'
+          ${{
+            steps.root_changes.outputs.changed_files
+          }}
+            EOF_FILES
           echo "---" >> changelog.tmp
 
-      - name: Ensure CHANGELOG.md structure and append entries
-        if: steps.root_changes.outputs.changed_files != ''
+      - name: Ensure CHANGELOG.md skeleton and append sections
+        if: |
+          steps.root_changes.outputs.changed_files != '' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+          )
+        shell: bash
         run: |
-          # Ensure CHANGELOG.md starts with "# Changelog"
+          set -euo pipefail
+
           if [ ! -f CHANGELOG.md ]; then
-            echo "# Changelog" > CHANGELOG.md
-            echo "" >> CHANGELOG.md
-            echo "## Commits" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-            echo "## Issues (closed)" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-            echo "## Pull Requests (approved)" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
+            {
+              echo "# Changelog"
+              echo ""
+              echo "## Commits"
+              echo ""
+              echo "## Issues (closed)"
+              echo ""
+              echo "## Pull Requests (approved)"
+              echo ""
+            } > CHANGELOG.md
           else
-            if ! grep -q "^# Changelog" CHANGELOG.md; then
-              echo -e "# Changelog\n$(cat CHANGELOG.md)" > CHANGELOG.md
+            if ! grep -q '^# Changelog' CHANGELOG.md; then
+              printf "# Changelog\n%s" "$(cat CHANGELOG.md)" > CHANGELOG.md
             fi
             for section in "## Commits" "## Issues (closed)" "## Pull Requests (approved)"; do
               if ! grep -q "^$section" CHANGELOG.md; then
-                # Only add the section if it does not already exist
-                echo -e "$section\n" >> CHANGELOG.md
+                printf "%s\n\n" "$section" >> CHANGELOG.md
               fi
             done
           fi
-          fi
 
-
-          # Insert new commit entry under ## Commits, avoid duplicates
-          NEW_COMMIT_ENTRY=$(cat changelog.tmp)
+          # Insert new commit entry under ## Commits (idempotent)
+          NEW_COMMIT_ENTRY="$(cat changelog.tmp)"
           if ! grep -Fq "$NEW_COMMIT_ENTRY" CHANGELOG.md; then
-            awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+            awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' CHANGELOG.md > .chlog.tmp && mv .chlog.tmp CHANGELOG.md
           fi
 
-          # If this is a pull request and it was merged/approved, add to Pull Requests section, avoid duplicates
+          # If this run is from a merged PR, add PR entry (idempotent)
           if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            PR_NUMBER=${{ github.event.pull_request.number }}
+            PR_NUMBER="${{ github.event.pull_request.number }}"
             PR_TITLE="${{ github.event.pull_request.title }}"
             PR_AUTHOR="${{ github.event.pull_request.user.login }}"
             PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
-            PR_ENTRY="### [$PR_TITLE]($PR_URL) by @$PR_AUTHOR\n- PR #$PR_NUMBER was approved and merged.\n"
+            PR_ENTRY="$(printf "### [%s](%s) by @%s\n- PR #%s was approved and merged.\n" "$PR_TITLE" "$PR_URL" "$PR_AUTHOR" "$PR_NUMBER")"
             if ! grep -Fq "$PR_ENTRY" CHANGELOG.md; then
-              awk '/^## Pull Requests \(approved\)/{print;print "";system("echo \"$PR_ENTRY\"");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+              awk '/^## Pull Requests \(approved\)/{print;print "";system("printf \"%s\" \"$PR_ENTRY\"");next}1' CHANGELOG.md > .pr.tmp && mv .pr.tmp CHANGELOG.md
             fi
           fi
 
-          # If this commit closes issues, add to Issues section, avoid duplicates
-          CLOSED_ISSUES=$(git log -1 --pretty=%s | grep -oE '#[0-9]+' | tr -d '#')
-          for ISSUE in $CLOSED_ISSUES; do
+          # Add closed issues referenced via closing keywords (idempotent)
+          for ISSUE in ${{ steps.payload.outputs.closed_issues }}; do
             ISSUE_URL="https://github.com/${{ github.repository }}/issues/$ISSUE"
-            ISSUE_ENTRY="### [Issue #$ISSUE]($ISSUE_URL) closed\n"
+            ISSUE_ENTRY="$(printf "### [Issue #%s](%s) closed\n" "$ISSUE" "$ISSUE_URL")"
             if ! grep -Fq "$ISSUE_ENTRY" CHANGELOG.md; then
-              awk '/^## Issues \(closed\)/{print;print "";system("echo \"$ISSUE_ENTRY\"");next}1' CHANGELOG.md > temp && mv temp CHANGELOG.md
+              awk '/^## Issues \(closed\)/{print;print "";system("printf \"%s\" \"$ISSUE_ENTRY\"");next}1' CHANGELOG.md > .issues.tmp && mv .issues.tmp CHANGELOG.md
             fi
           done
 
-      - name: Commit and push CHANGELOG.md
-        if: github.event_name == 'push' && steps.root_changes.outputs.changed_files != ''
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git pull --rebase origin master || exit 1
-          git add CHANGELOG.md
-          git commit -m "update CHANGELOG.md for root file changes"
-          git push origin master
+      - name: Create PR for CHANGELOG.md
+        if: |
+          steps.root_changes.outputs.changed_files != '' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+          )
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/changelog-${{ github.run_id }}
+          commit-message: "chore(changelog): update for root JS changes"
+          title: "Update CHANGELOG for root JS changes"
+          body: |
+            This automated PR updates **CHANGELOG.md** for:
+            - Commits that modify root-level `*.js` files
+            - Merged PRs that modify root-level `*.js` files
+            - Issues auto-closed via closing keywords in those commits/PRs
+          add-paths: |
+            CHANGELOG.md
