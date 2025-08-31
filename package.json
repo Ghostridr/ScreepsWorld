@@ -1,0 +1,15 @@
+{
+  "name": "screepsworld",
+  "version": "1.0.0",
+  "description": "A learning-first JavaScript repo built by playing the MMO programming game **Screeps**.",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.1.1"
+  }
+}

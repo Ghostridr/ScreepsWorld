@@ -1,1 +1,36 @@
+# IDE/editor
+.idea/
+.vscode/
+*.swo
+*.swp
+
+# Linux
+*~
+.nfs*
+
+# macOS
+.AppleDouble
+.DS_Store
+.LSOverride
+*.DS_Store
+
+# Misc
+.env
+.gitattributes
+
+# Node.js
+node_modules/
+npm-debug.log*
+package-lock.json
+yarn-debug.log*
+yarn-error.log*
+
+# ScreepsWorld
+src/tests/
 Tutorials/.DS_Store
+
+# Windows
+$RECYCLE.BIN/
+Desktop.ini
+ehthumbs.db
+Thumbs.db

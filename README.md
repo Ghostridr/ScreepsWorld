@@ -108,29 +108,26 @@ Each milestone validates for \~50–100 ticks unless noted. Boxes are targets fo
 
 ```text
 src/
-  main.js                 # exports.loop — top-level orchestration only
-  constants/
-    roles.js              # role names, body configs, caps
-    plans.js              # per-RCL build intents
-  utils/
-    logger.js             # log formatting, levels
-    memory.js             # schema init, GC, migrations
-    profiler.js           # optional CPU sampling helpers
-  drivers/
-    game.js               # thin wrappers over Game/Memory (isolate globals)
-    movement.js           # moveTo policy, reusePath, caching adapters
-  services/
-    creeps.js             # registry, indexing, counts
-    rooms.js              # per-room views, metrics
-    pathing.js            # path cache/stuck detection APIs
-  roles/
-    harvester.js
-    upgrader.js
-    builder.js
-  managers/
-    spawn.js              # planSpawns(room) -> orders[]
-    task.js               # central queue, claims
-    tower.js              # heal/repair/attack priorities
+  main.js                   # exports.loop — top-level orchestration only
+  configs.js                # configuration values
+  constants.plans.js        # per-RCL build intents
+  driver.game.js            # thin wrappers over Game/Memory (isolate globals)
+  driver.movement.js        # moveTo policy, reusePath, caching adapters
+  driver.roles.js           # role logic adapters
+  index.constants.js        # constants index/exports
+  manager.spawner.js        # auto-spawn creeps for all roles
+  manager.task.js           # central queue, claims
+  manager.tower.js          # heal/repair/attack priorities
+  role.builder.js           # builder role logic
+  role.harvester.js         # harvester role logic
+  role.upgrader.js          # upgrader role logic
+  services.creeps.js        # registry, indexing, counts
+  services.pathing.js       # path cache/stuck detection APIs
+  services.rooms.js         # per-room views, metrics
+  util.logger.js            # log formatting, levels
+  util.memory.js            # schema init, GC, migrations
+  util.profiler.js          # optional CPU sampling helpers
+  tests/                    # test files
 ```
 
 **Minimal loop skeleton (illustrative):**
