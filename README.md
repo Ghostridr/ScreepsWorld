@@ -1,6 +1,6 @@
 # ScreepsWorld
 
-[![Changelog Tracker](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg?branch=master&event=check_run)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml)
+[![Changelog Tracker](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg?branch=master)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml)
 
 *A learning-first JavaScript repo built by playing the MMO programming game **Screeps**.*
 
