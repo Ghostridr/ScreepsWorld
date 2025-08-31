@@ -47,54 +47,53 @@
 
 ## Learning Roadmap (Milestones)
 
-Each milestone validates for \~50–100 ticks unless noted. Boxes are targets for this repo.
+Each milestone validates for ~50–100 ticks unless noted. Boxes are targets for this repo.
 
 * [ ] **M0 — Environment & Habits**
-
-  * Build: `src/main.js` loop skeleton, `utils/logger.js`, deploy flow.
+  * Build: `src/main.js` loop skeleton, `src/util.logger.js`, deploy flow.
   * Verify: end-of-tick log shows `Game.time` & `Game.cpu.getUsed()` trending predictably.
+
 * [ ] **M1 — Memory Hygiene & Schema**
-
-  * Build: `utils/memory.js` (GC dead creeps/stale keys), `Memory.version` + migrations.
+  * Build: `src/util.memory.js` (GC dead creeps/stale keys), `Memory.version` + migrations.
   * Verify: Memory growth stabilizes; logs show removed creep memory + migration applied.
+
 * [ ] **M2 — Harvester FSM**
+  * Build: `src/role.harvester.js` with `gather`/`deliver` states.
+  * Verify: state logs; no flip-flop within 5 ticks at boundaries.
 
-  * Build: `roles/harvester.js` with `gather`/`deliver` states.
-  * Verify: state logs; no flip‑flop within 5 ticks at boundaries.
 * [ ] **M3 — SpawnManager v1**
-
-  * Build: `managers/spawn.js` ensures ≥1 harvester when energy ≥300.
+  * Build: `src/manager.spawner.js` ensures ≥1 harvester when energy ≥300.
   * Verify: auto-respawn after death; stable counts.
+
 * [ ] **M4 — Upgrader & Builder**
-
-  * Build: `roles/upgrader.js`, `roles/builder.js`.
+  * Build: `src/role.upgrader.js`, `src/role.builder.js`.
   * Verify: controller progress; builders idle only if no sites.
+
 * [ ] **M5 — Role Router & Creep Registry**
-
-  * Build: `runRole(creep)` dispatcher; `services/creeps.js` indexing by role.
+  * Build: `src/driver.roles.js` dispatcher; `src/services.creeps.js` indexing by role.
   * Verify: per-role counts; no exceptions when a role is absent.
+
 * [ ] **M6 — Pathing & Caching**
-
-  * Build: path cache (pos→pos key, TTL), stuck detection.
+  * Build: `src/services.pathing.js` (path cache, stuck detection).
   * Verify: CPU delta improves; cache hit rate >30% on busy ticks.
-* [ ] **M7 — Per‑RCL Build Plan**
 
-  * Build: `constants/plans.js` with planner emitting build intents per RCL.
+* [ ] **M7 — Per-RCL Build Plan**
+  * Build: `src/constants.plans.js` with planner emitting build intents per RCL.
   * Verify: on RCL change, intents valid; no illegal placements.
+
 * [ ] **M8 — TaskManager v1 (Priority Queue)**
-
-  * Build: central queue; simple priority + claim.
+  * Build: `src/manager.task.js` central queue; simple priority + claim.
   * Verify: higher utilization; fewer idle ticks.
+
 * [ ] **M9 — Tower Logic & Defense**
-
-  * Build: heal → repair (cap) → attack priorities.
+  * Build: `src/manager.tower.js` heal → repair (cap) → attack priorities.
   * Verify: tower CPU under budget; repair caps respected.
-* [ ] **M10 — Remote Mining Starter**
 
+* [ ] **M10 — Remote Mining Starter**
   * Build: reserver + hauler basics; vision/route checks.
   * Verify: external room reserved; energy returns without timeouts.
-* [ ] **M11 — Production Polish**
 
+* [ ] **M11 — Production Polish**
   * Build: log levels; feature flags; error boundary wrapper; metrics dump.
   * Verify: toggleable logs; stable CPU trend.
 
@@ -165,7 +164,7 @@ exports.loop = function () {
 
 ## Changelog
 
-Maintain `CHANGELOG.md` (Keep a Changelog format). Tag milestones when their verification criteria pass.
+A maintained log can be viewed at [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
 
 ---
 
@@ -177,6 +176,7 @@ See [LICENSE](LICENSE) for details.
 
 ### Personal Notes & TODOs
 
+* [x] Create `CHANGELOG.md` and a working, custom `changelog.yml`
 * [ ] Add badges (CI, lint, tests).
 * [ ] Write `CONTRIBUTING.md` with hint ladder rules.
 * [ ] Create `.editorconfig`, ESLint + Prettier configs.
