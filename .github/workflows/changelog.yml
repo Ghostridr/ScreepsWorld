@@ -1,5 +1,9 @@
 name: Changelog Tracker
 
+concurrency:
+  group: changelog-update
+  cancel-in-progress: true
+
 on:
   push:
     paths:
@@ -128,7 +132,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git pull --rebase origin master
+          git pull --rebase origin master || exit 1
           git add CHANGELOG.md
           git commit -m "update CHANGELOG.md for root file changes"
           git push origin master
