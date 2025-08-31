@@ -10,11 +10,8 @@ concurrency:
 
 on:
   push:
-    # Only run when any JS files change (filter to ROOT *.js in-script)
     paths:
       - '*.js'
-    paths-ignore:
-      - 'CHANGELOG.md'
   pull_request:
     types: [closed]
     paths:
@@ -81,18 +78,20 @@ jobs:
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
             COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+            # Fallback for squash/rebase merges where merge_commit_sha can be null
+            if [ -z "${COMMIT:-}" ] || [ "${COMMIT:-null}" = "null" ]; then
+              COMMIT="${{ github.event.pull_request.head.sha }}"
+            fi
             PR_NUMBER="${{ github.event.pull_request.number }}"
             TITLE="${{ github.event.pull_request.title }}"
             BODY="${{ github.event.pull_request.body }}"
             PR_LINK="[PR #$PR_NUMBER](https://github.com/${REPO}/pull/$PR_NUMBER)"
-            MERGED="${{ github.event.pull_request.merged }}"
           else
             COMMIT="${{ github.sha }}"
             PR_NUMBER=""
             PR_LINK=""
             TITLE="$(git log -1 --pretty=%s)"
             BODY="$(git log -1 --pretty=%b)"
-            MERGED=""
           fi
 
           # Collect issue numbers closed by this commit/PR via closing keywords
@@ -103,11 +102,13 @@ jobs:
             TEXT="$(git log -1 --pretty=%s%n%b)"
           fi
 
-          CLOSED_ISSUES="$(printf '%s' "$TEXT" \
-            | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
-            | grep -oE '#[0-9]+' \
-            | tr -d '#' \
-            | sort -u || true)"
+          CLOSED_ISSUES="$(
+            printf '%s' "$TEXT" \
+              | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
+              | grep -oE '#[0-9]+' \
+              | tr -d '#' \
+              | sort -u || true
+          )"
 
           {
             echo "title<<EOF"
@@ -140,7 +141,6 @@ jobs:
           echo "**${{ steps.payload.outputs.title }}** ${{ steps.payload.outputs.pr_link }}" >> changelog.tmp
           if [ -n "${{ steps.payload.outputs.body }}" ]; then
             echo "" >> changelog.tmp
-            # Body may contain markdown; write as-is
             printf "%s\n" "${{ steps.payload.outputs.body }}" >> changelog.tmp
           fi
           echo "" >> changelog.tmp
@@ -148,13 +148,11 @@ jobs:
           echo "*Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
           echo "*Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
           echo "*Changed root JS files:*" >> changelog.tmp
+
           while IFS= read -r file; do
             [ -n "$file" ] && echo "  - $file" >> changelog.tmp
-          done << 'EOF_FILES'
-          ${{
-            steps.root_changes.outputs.changed_files
-          }}
-            EOF_FILES
+          done <<< "${{ steps.root_changes.outputs.changed_files }}"
+
           echo "---" >> changelog.tmp
 
       - name: Ensure CHANGELOG.md skeleton and append sections
