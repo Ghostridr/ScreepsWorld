@@ -26,7 +26,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # ScreepsWorld
-src/tests/
 Tutorials/.DS_Store
 
 # Windows
