@@ -237,6 +237,7 @@ jobs:
           fi
 
       - name: Create PR for CHANGELOG.md
+        id: cpr
         if: steps.changelog_changed.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
@@ -250,3 +251,12 @@ jobs:
             - Issues auto-closed via closing keywords in those commits/PRs
           add-paths: |
             CHANGELOG.md
+      
+      - name: Enable auto-merge (merge commit)
+        if: steps.cpr.outputs.pull-request-number && steps.changelog_changed.outputs.changed == 'true'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        continue-on-error: true
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: merge
+
