@@ -10,11 +10,11 @@ concurrency:
 
 on:
   push:
-    # Only run when root-level *.js change (GitHub path filter + in-script check)
+    # Only run when root-level *.js change
     paths:
       - '*.js'
   pull_request:
-    # Run when PR is closed; only act if it was merged AND it touched root *.js
+    # Only act on merged PRs that touched root-level *.js
     types: [closed]
     paths:
       - '*.js'
@@ -39,7 +39,7 @@ jobs:
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
             BASE_REF="${{ github.event.pull_request.base.sha }}"
-            # Prefer merge commit when available, else fall back to PR head
+            # Prefer merge commit when available (squash/rebase-friendly), else fall back to head
             if [ -n "${{ github.event.pull_request.merge_commit_sha }}" ] && [ "${{ github.event.pull_request.merge_commit_sha }}" != "null" ]; then
               HEAD_REF="${{ github.event.pull_request.merge_commit_sha }}"
             else
@@ -78,28 +78,28 @@ jobs:
         run: |
           set -euo pipefail
 
-          DATE="$(date '+%Y-%m-%d %H:%M:%S')"
+          # Use user's timezone (America/Chicago) like your example
+          DATE="$(TZ=America/Chicago date '+%Y-%m-%d %H:%M:%S')"
           AUTHOR="${{ github.actor }}"
           REPO="${{ github.repository }}"
           EVENT_NAME="${{ github.event_name }}"
 
           if [ "$EVENT_NAME" = "pull_request" ]; then
             COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+            # Fallback for squash/rebase merges where merge_commit_sha may be null
             if [ -z "${COMMIT:-}" ] || [ "${COMMIT:-null}" = "null" ]; then
               COMMIT="${{ github.event.pull_request.head.sha }}"
             fi
-            PR_NUMBER="${{ github.event.pull_request.number }}"
             TITLE="${{ github.event.pull_request.title }}"
             BODY="${{ github.event.pull_request.body }}"
           else
             COMMIT="${{ github.sha }}"
-            PR_NUMBER=""
             TITLE="$(git log -1 --pretty=%s)"
             BODY="$(git log -1 --pretty=%b)"
           fi
 
-          # Collect issue numbers closed by this commit/PR via closing keywords
-          # (fix(es|ed)?|close(s|d)?|resolve(s|d)?) #123
+          # Collect issue numbers closed via closing keywords in commit/PR text
+          # (close(s|d)?|fix(e[sd])?|resolve(s|d)?) #123
           if [ "$EVENT_NAME" = "pull_request" ]; then
             TEXT="$TITLE"$'\n'"$BODY"
           else
@@ -140,11 +140,11 @@ jobs:
           set -euo pipefail
 
           : > changelog.tmp
-          # Heading: "### <commit/PR title>"
+          # Heading exactly like your sample: "### <title>"
           echo "### ${{ steps.payload.outputs.title }}" >> changelog.tmp
           echo "" >> changelog.tmp
 
-          # Bullet lines exactly as requested; no body text, no PR link, no separators
+          # Bullet lines exactly as requested (no PR link, no body, no separators)
           echo "- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
           echo "- *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
           echo "- *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
@@ -159,6 +159,7 @@ jobs:
           echo "" >> changelog.tmp
 
       - name: Ensure CHANGELOG.md skeleton and append sections
+        id: apply_changelog
         if: |
           steps.root_changes.outputs.changed_files != '' &&
           (
@@ -191,10 +192,12 @@ jobs:
             done
           fi
 
-          # Insert new commit entry under ## Commits (idempotent)
-          NEW_COMMIT_ENTRY="$(cat changelog.tmp)"
-          if ! grep -Fq "$NEW_COMMIT_ENTRY" CHANGELOG.md; then
+          # Dedupe by the commit line (serves as a primary key)
+          DEDUP_TOKEN="- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
+          if ! grep -Fq "$DEDUP_TOKEN" CHANGELOG.md; then
             awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' CHANGELOG.md > .chlog.tmp && mv .chlog.tmp CHANGELOG.md
+          else
+            echo "Entry for this commit already present; skipping append."
           fi
 
           # If this run is from a merged PR, add PR entry (idempotent)
@@ -218,13 +221,23 @@ jobs:
             fi
           done
 
+          # Cleanup temp file (avoid untracked noise)
+          rm -f changelog.tmp
+
+      - name: Detect changelog modifications
+        id: changelog_changed
+        shell: bash
+        run: |
+          if ! git diff --quiet -- CHANGELOG.md; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "CHANGELOG.md modified."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "CHANGELOG.md not modified; skipping PR."
+          fi
+
       - name: Create PR for CHANGELOG.md
-        if: |
-          steps.root_changes.outputs.changed_files != '' &&
-          (
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-          )
+        if: steps.changelog_changed.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           branch: chore/changelog-${{ github.run_id }}
