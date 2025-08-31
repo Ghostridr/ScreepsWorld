@@ -145,7 +145,7 @@ exports.loop = function () {
 
 ## Deployment
 
-> This repo assumes an **offline-first** workflow. Configure a deploy step that syncs `src/` to the Screeps client. Add your `.screeps.json` if applicable.
+> This repo assumes an **offline-first** workflow based in `src/`. Any modules within the root will appear in the Screeps client and be readable by the game. Screeps does not support folders or other files outside it's designed modules (`main`, `role.builder`, etc.).
 
 **Release checklist:**
 
