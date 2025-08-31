@@ -3,6 +3,15 @@
 
 ## Commits
 
+### fix: remove test comment from main loop in main.js
+
+- *Commit:* [81560444d331d80c093713b85e38686e12378f2c](https://github.com/Ghostridr/ScreepsWorld/commit/81560444d331d80c093713b85e38686e12378f2c)
+- *Author:* Ghostridr
+- *Date:* 2025-08-31 05:20:39
+- *Changed root JS files:*
+  - main.js
+
+
 ### fix: add newline at end of file for TODO comment for auto-spawning logic**
 
 - *Commit:* [6160107fd8ea189491e86dfe61f8ad9758e7211e](https://github.com/Ghostridr/ScreepsWorld/commit/6160107fd8ea189491e86dfe61f8ad9758e7211e)
