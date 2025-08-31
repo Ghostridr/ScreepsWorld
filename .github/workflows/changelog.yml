@@ -14,7 +14,7 @@ on:
     paths:
       - '*.js'
   pull_request:
-    # Run when PR is closed; we'll only act if it was merged AND it touched root *.js
+    # Run when PR is closed; only act if it was merged AND it touched root *.js
     types: [closed]
     paths:
       - '*.js'
