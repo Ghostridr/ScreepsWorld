@@ -3,6 +3,16 @@
 
 ## Commits
 
+### 🟢 add comment for default desired counts re-evaluation and recycling
+
+- 🟢 *Commit:* [4975b67b0fc96f95367a460fff7ceb3b6fe903a5](https://github.com/Ghostridr/ScreepsWorld/commit/4975b67b0fc96f95367a460fff7ceb3b6fe903a5)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-08-31 05:43:46
+- 📦 *Changed root JS files:*
+  - main.js
+  - manager.spawner.js
+
+
 ### feat(spawner): implement default desired counts for auto-spawning roles
 
 - *Commit:* [8bc51248e9d5f72baf56646e165a38e79587a1f4](https://github.com/Ghostridr/ScreepsWorld/commit/8bc51248e9d5f72baf56646e165a38e79587a1f4)
