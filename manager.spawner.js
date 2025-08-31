@@ -5,3 +5,5 @@ const roleNames = [
 	'harvester',
 	'upgrader'
 ];
+
+// To Do: Implement auto-spawning logic for each role
