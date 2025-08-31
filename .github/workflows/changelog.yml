@@ -87,9 +87,11 @@ jobs:
             fi
             for section in "## Commits" "## Issues (closed)" "## Pull Requests (approved)"; do
               if ! grep -q "^$section" CHANGELOG.md; then
+                # Only add the section if it does not already exist
                 echo -e "$section\n" >> CHANGELOG.md
               fi
             done
+          fi
           fi
 
 
