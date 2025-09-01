@@ -155,8 +155,6 @@ jobs:
             [ -n "$file" ] && echo "  - $file" >> changelog.tmp
           done <<< "${{ steps.root_changes.outputs.changed_files }}"
 
-          # Blank line between entries
-          echo "" >> changelog.tmp
 
       - name: Ensure CHANGELOG.md skeleton and append sections
         id: apply_changelog
@@ -193,9 +191,9 @@ jobs:
           fi
 
           # Dedupe by the commit line (serves as a primary key)
-          DEDUP_TOKEN="- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
+          DEDUP_TOKEN="- \ud83d\udfe2 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
           if ! grep -Fq "$DEDUP_TOKEN" CHANGELOG.md; then
-            awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' CHANGELOG.md > .chlog.tmp && mv .chlog.tmp CHANGELOG.md
+            awk 'BEGIN{skip=0} /^## Commits/{print; print ""; system("cat changelog.tmp"); print ""; skip=1; next} skip==1 && NF==0{skip=0; next} {print}' CHANGELOG.md > .chlog.tmp && mv .chlog.tmp CHANGELOG.md
           else
             echo "Entry for this commit already present; skipping append."
           fi

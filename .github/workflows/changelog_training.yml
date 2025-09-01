@@ -155,8 +155,6 @@ jobs:
             [ -n "$file" ] && echo "  - $file" >> changelog.tmp
           done <<< "${{ steps.root_changes.outputs.changed_files }}"
 
-          # Blank line between entries
-          echo "" >> changelog.tmp
 
       - name: Ensure CHANGELOG.md skeleton and append sections
         id: apply_changelog
@@ -195,9 +193,9 @@ jobs:
           fi
 
           # Dedupe by the commit line (serves as a primary key)
-          DEDUP_TOKEN="- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
+          DEDUP_TOKEN="- \ud83d\udfe2 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
           if ! grep -Fq "$DEDUP_TOKEN" "$CHLOG_PATH"; then
-            awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
+            awk 'BEGIN{skip=0} /^## Commits/{print; print ""; system("cat changelog.tmp"); print ""; skip=1; next} skip==1 && NF==0{skip=0; next} {print}' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
           else
             echo "Entry for this commit already present; skipping append."
           fi
@@ -245,12 +243,12 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: chore/changelog-${{ github.run_id }}
-          commit-message: "chore(changelog): update for root JS changes"
-          title: "Update CHANGELOG for root JS changes"
+          commit-message: "chore(changelog): update for training JS changes"
+          title: "Update CHANGELOG for training JS changes"
           body: |
             This automated PR updates **CHANGELOG.md** for:
-            - Commits that modify root-level `*.js` files
-            - Merged PRs that modify root-level `*.js` files
+            - Commits that modify training-level `*.js` files
+            - Merged PRs that modify those files
             - Issues auto-closed via closing keywords in those commits/PRs
           add-paths: |
             screeps.com/CHANGELOG.md

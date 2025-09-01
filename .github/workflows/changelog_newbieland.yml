@@ -138,7 +138,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] && echo "  - $file" >> changelog.tmp
           done <<< "${{ steps.root_changes.outputs.changed_files }}"
-          echo "" >> changelog.tmp
+
 
       - name: Ensure CHANGELOG.md skeleton and append sections
         id: apply_changelog
@@ -175,9 +175,9 @@ jobs:
             done
           fi
 
-          DEDUP_TOKEN="- *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
+          DEDUP_TOKEN="- \ud83d\udfe2 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
           if ! grep -Fq "$DEDUP_TOKEN" "$CHLOG_PATH"; then
-            awk '/^## Commits/{print;print "";system("cat changelog.tmp");next}1' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
+            awk 'BEGIN{skip=0} /^## Commits/{print; print ""; system("cat changelog.tmp"); print ""; skip=1; next} skip==1 && NF==0{skip=0; next} {print}' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
           else
             echo "Entry for this commit already present; skipping append."
           fi
