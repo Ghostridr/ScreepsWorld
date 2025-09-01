@@ -1,4 +1,8 @@
-# Newbie Land (screeps_newbieland_net___21025)
+# Newbie Land
+
+[![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](../LICENSE)
+
+[![Changelog Tracker (newbieland)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml/badge.svg?branch=master?style=plastic)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml)
 
 A live testing workspace wired to the community “Newbie Land” Screeps server. I use this folder to push code straight into a running room and verify behavior under real ticks, spawns, and hostiles.
 
