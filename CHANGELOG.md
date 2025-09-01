@@ -3,6 +3,16 @@
 
 ## Commits
 
+### 🟢 feat: implement auto-spawn logic for creeps and add initial test for manager.spawner
+
+- 🟢 *Commit:* [b1566fe65230369bbdaa346bed274bec12ab6ca6](https://github.com/Ghostridr/ScreepsWorld/commit/b1566fe65230369bbdaa346bed274bec12ab6ca6)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-08-31 22:59:08
+- 📦 *Changed root JS files:*
+  - src/manager.spawner.js
+  - src/tests/manager.spawner.test.js
+
+
 ### 🟢 add comment for default desired counts re-evaluation and recycling
 
 - 🟢 *Commit:* [4975b67b0fc96f95367a460fff7ceb3b6fe903a5](https://github.com/Ghostridr/ScreepsWorld/commit/4975b67b0fc96f95367a460fff7ceb3b6fe903a5)
