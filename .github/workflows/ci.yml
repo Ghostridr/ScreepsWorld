@@ -1,0 +1,55 @@
+name: CI
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    changes:
+        name: Detect changes
+        runs-on: ubuntu-latest
+        outputs:
+            training: ${{ steps.filter.outputs.training }}
+            code: ${{ steps.filter.outputs.code }}
+        steps:
+            - uses: actions/checkout@v4
+            - id: filter
+              uses: dorny/paths-filter@v3
+              with:
+                  filters: |
+                      training:
+                        - 'screeps.com/**'
+                      code:
+                        - 'src/**'
+                        - 'screeps_newbieland_net___21025/**'
+                        - 'tests/**'
+                        - 'tools/**'
+                        - 'configs/**'
+                        - '!screeps.com/**'
+
+    lint_and_test:
+        name: Lint and Test
+        needs: changes
+        runs-on: ubuntu-latest
+        if: ${{ !(needs.changes.outputs.training == 'true' && needs.changes.outputs.code != 'true') }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+            - run: npm ci
+            - name: Lint
+              run: npm run lint
+            - name: Test
+              run: npm test -- --ci
+
+    training_only_note:
+        name: Training-only note
+        needs: changes
+        runs-on: ubuntu-latest
+        if: ${{ needs.changes.outputs.training == 'true' && needs.changes.outputs.code != 'true' }}
+        steps:
+            - run: echo "Training-only changes detected; skipping lint/tests."

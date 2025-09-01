@@ -1,242 +1,240 @@
 name: Changelog Tracker (newbieland)
 
 permissions:
-  contents: write
-  pull-requests: write
+    contents: write
+    pull-requests: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 on:
-  push:
-    paths:
-      - 'screeps_newbieland_net___21025/default/**/*.js'
-  pull_request:
-    types: [closed]
-    paths:
-      - 'screeps_newbieland_net___21025/default/**/*.js'
-  workflow_dispatch:
+    push:
+        paths:
+            - 'screeps_newbieland_net___21025/default/**/*.js'
+    pull_request:
+        types: [closed]
+        paths:
+            - 'screeps_newbieland_net___21025/default/**/*.js'
+    workflow_dispatch:
 
 jobs:
-  changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    changelog:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-      - name: Determine changed newbieland .js files
-        id: root_changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          EVENT_NAME="${{ github.event_name }}"
+            - name: Determine changed newbieland .js files
+              id: root_changes
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  EVENT_NAME="${{ github.event_name }}"
 
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            BASE_REF="${{ github.event.pull_request.base.sha }}"
-            if [ -n "${{ github.event.pull_request.merge_commit_sha }}" ] && [ "${{ github.event.pull_request.merge_commit_sha }}" != "null" ]; then
-              HEAD_REF="${{ github.event.pull_request.merge_commit_sha }}"
-            else
-              HEAD_REF="${{ github.event.pull_request.head.sha }}"
-            fi
-          else
-            BASE_REF="${{ github.event.before }}"
-            HEAD_REF="${{ github.sha }}"
-          fi
+                  if [ "$EVENT_NAME" = "pull_request" ]; then
+                    BASE_REF="${{ github.event.pull_request.base.sha }}"
+                    if [ -n "${{ github.event.pull_request.merge_commit_sha }}" ] && [ "${{ github.event.pull_request.merge_commit_sha }}" != "null" ]; then
+                      HEAD_REF="${{ github.event.pull_request.merge_commit_sha }}"
+                    else
+                      HEAD_REF="${{ github.event.pull_request.head.sha }}"
+                    fi
+                  else
+                    BASE_REF="${{ github.event.before }}"
+                    HEAD_REF="${{ github.sha }}"
+                  fi
 
-          CHANGED_FILES="$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^screeps_newbieland_net___21025/default/.*\.js$' || true)"
+                  CHANGED_FILES="$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^screeps_newbieland_net___21025/default/.*\.js$' || true)"
 
-          {
-            echo "changed_files<<EOF"
-            echo "$CHANGED_FILES"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+                  {
+                    echo "changed_files<<EOF"
+                    echo "$CHANGED_FILES"
+                    echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
 
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "Detected newbieland JS changes:"
-            echo "$CHANGED_FILES"
-          else
-            echo "No newbieland .js changes detected."
-          fi
+                  if [ -n "$CHANGED_FILES" ]; then
+                    echo "Detected newbieland JS changes:"
+                    echo "$CHANGED_FILES"
+                  else
+                    echo "No newbieland .js changes detected."
+                  fi
 
-      - name: Prepare changelog entry payload
-        id: payload
-        if: |
-          steps.root_changes.outputs.changed_files != '' &&
-          (
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-          )
-        shell: bash
-        run: |
-          set -euo pipefail
-          DATE="$(TZ=America/Chicago date '+%Y-%m-%d %H:%M:%S')"
-          AUTHOR="${{ github.actor }}"
-          EVENT_NAME="${{ github.event_name }}"
+            - name: Prepare changelog entry payload
+              id: payload
+              if: |
+                  steps.root_changes.outputs.changed_files != '' &&
+                  (
+                    github.event_name == 'push' ||
+                    (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+                  )
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  DATE="$(TZ=America/Chicago date '+%Y-%m-%d %H:%M:%S')"
+                  AUTHOR="${{ github.actor }}"
+                  EVENT_NAME="${{ github.event_name }}"
 
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
-            if [ -z "${COMMIT:-}" ] || [ "${COMMIT:-null}" = "null" ]; then
-              COMMIT="${{ github.event.pull_request.head.sha }}"
-            fi
-            TITLE="${{ github.event.pull_request.title }}"
-            BODY="${{ github.event.pull_request.body }}"
-          else
-            COMMIT="${{ github.sha }}"
-            TITLE="$(git log -1 --pretty=%s)"
-            BODY="$(git log -1 --pretty=%b)"
-          fi
+                  if [ "$EVENT_NAME" = "pull_request" ]; then
+                    COMMIT="${{ github.event.pull_request.merge_commit_sha }}"
+                    if [ -z "${COMMIT:-}" ] || [ "${COMMIT:-null}" = "null" ]; then
+                      COMMIT="${{ github.event.pull_request.head.sha }}"
+                    fi
+                    TITLE="${{ github.event.pull_request.title }}"
+                    BODY="${{ github.event.pull_request.body }}"
+                  else
+                    COMMIT="${{ github.sha }}"
+                    TITLE="$(git log -1 --pretty=%s)"
+                    BODY="$(git log -1 --pretty=%b)"
+                  fi
 
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            TEXT="$TITLE"$'\n'"$BODY"
-          else
-            TEXT="$(git log -1 --pretty=%s%n%b)"
-          fi
+                  if [ "$EVENT_NAME" = "pull_request" ]; then
+                    TEXT="$TITLE"$'\n'"$BODY"
+                  else
+                    TEXT="$(git log -1 --pretty=%s%n%b)"
+                  fi
 
-          CLOSED_ISSUES="$(
-            printf '%s' "$TEXT" \
-              | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
-              | grep -oE '#[0-9]+' \
-              | tr -d '#' \
-              | sort -u || true
-          )"
+                  CLOSED_ISSUES="$(
+                    printf '%s' "$TEXT" \
+                      | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' \
+                      | grep -oE '#[0-9]+' \
+                      | tr -d '#' \
+                      | sort -u || true
+                  )"
 
-          {
-            echo "title<<EOF"
-            echo "$TITLE"
-            echo "EOF"
-            echo "body<<EOF"
-            echo "$BODY"
-            echo "EOF"
-            echo "commit=$COMMIT"
-            echo "author=$AUTHOR"
-            echo "date=$DATE"
-            echo "closed_issues=$CLOSED_ISSUES"
-          } >> "$GITHUB_OUTPUT"
+                  {
+                    echo "title<<EOF"
+                    echo "$TITLE"
+                    echo "EOF"
+                    echo "body<<EOF"
+                    echo "$BODY"
+                    echo "EOF"
+                    echo "commit=$COMMIT"
+                    echo "author=$AUTHOR"
+                    echo "date=$DATE"
+                    echo "closed_issues=$CLOSED_ISSUES"
+                  } >> "$GITHUB_OUTPUT"
 
-      - name: Build entry file (Commits section)
-        id: entry
-        if: |
-          steps.root_changes.outputs.changed_files != '' &&
-          (
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-          )
-        shell: bash
-        run: |
-          set -euo pipefail
+            - name: Build entry file (Commits section)
+              id: entry
+              if: |
+                  steps.root_changes.outputs.changed_files != '' &&
+                  (
+                    github.event_name == 'push' ||
+                    (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+                  )
+              shell: bash
+              run: |
+                  set -euo pipefail
 
-          : > changelog.tmp
-          echo "### 🟢 ${{ steps.payload.outputs.title }}" >> changelog.tmp
-          echo "" >> changelog.tmp
-          echo "- 🟢 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
-          echo "- 👤 *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
-          echo "- 📅 *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
-          echo "- 📦 *Changed newbieland JS files:*" >> changelog.tmp
-          while IFS= read -r file; do
-            [ -n "$file" ] && echo "  - $file" >> changelog.tmp
-          done <<< "${{ steps.root_changes.outputs.changed_files }}"
+                  : > changelog.tmp
+                  echo "### 🟢 ${{ steps.payload.outputs.title }}" >> changelog.tmp
+                  echo "" >> changelog.tmp
+                  echo "- 🟢 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
+                  echo "- 👤 *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
+                  echo "- 📅 *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
+                  echo "- 📦 *Changed newbieland JS files:*" >> changelog.tmp
+                  while IFS= read -r file; do
+                    [ -n "$file" ] && echo "  - $file" >> changelog.tmp
+                  done <<< "${{ steps.root_changes.outputs.changed_files }}"
 
+            - name: Ensure CHANGELOG.md skeleton and append sections
+              id: apply_changelog
+              if: |
+                  steps.root_changes.outputs.changed_files != '' &&
+                  (
+                    github.event_name == 'push' ||
+                    (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+                  )
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  CHLOG_PATH="screeps_newbieland_net___21025/CHANGELOG.md"
 
-      - name: Ensure CHANGELOG.md skeleton and append sections
-        id: apply_changelog
-        if: |
-          steps.root_changes.outputs.changed_files != '' &&
-          (
-            github.event_name == 'push' ||
-            (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-          )
-        shell: bash
-        run: |
-          set -euo pipefail
-          CHLOG_PATH="screeps_newbieland_net___21025/CHANGELOG.md"
+                  if [ ! -f "$CHLOG_PATH" ]; then
+                    {
+                      echo "# Changelog"
+                      echo ""
+                      echo "## Commits"
+                      echo ""
+                      echo "## Issues (closed)"
+                      echo ""
+                      echo "## Pull Requests (approved)"
+                      echo ""
+                    } > "$CHLOG_PATH"
+                  else
+                    if ! grep -q '^# Changelog' "$CHLOG_PATH"; then
+                      printf "# Changelog\n%s" "$(cat "$CHLOG_PATH")" > "$CHLOG_PATH"
+                    fi
+                    for section in "## Commits" "## Issues (closed)" "## Pull Requests (approved)"; do
+                      if ! grep -q "^$section" "$CHLOG_PATH"; then
+                        printf "%s\n\n" "$section" >> "$CHLOG_PATH"
+                      fi
+                    done
+                  fi
 
-          if [ ! -f "$CHLOG_PATH" ]; then
-            {
-              echo "# Changelog"
-              echo ""
-              echo "## Commits"
-              echo ""
-              echo "## Issues (closed)"
-              echo ""
-              echo "## Pull Requests (approved)"
-              echo ""
-            } > "$CHLOG_PATH"
-          else
-            if ! grep -q '^# Changelog' "$CHLOG_PATH"; then
-              printf "# Changelog\n%s" "$(cat "$CHLOG_PATH")" > "$CHLOG_PATH"
-            fi
-            for section in "## Commits" "## Issues (closed)" "## Pull Requests (approved)"; do
-              if ! grep -q "^$section" "$CHLOG_PATH"; then
-                printf "%s\n\n" "$section" >> "$CHLOG_PATH"
-              fi
-            done
-          fi
+                  DEDUP_TOKEN="- \ud83d\udfe2 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
+                  if ! grep -Fq "$DEDUP_TOKEN" "$CHLOG_PATH"; then
+                    awk 'BEGIN{skip=0} /^## Commits/{print; print ""; system("cat changelog.tmp"); print ""; skip=1; next} skip==1 && NF==0{skip=0; next} {print}' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
+                  else
+                    echo "Entry for this commit already present; skipping append."
+                  fi
 
-          DEDUP_TOKEN="- \ud83d\udfe2 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})"
-          if ! grep -Fq "$DEDUP_TOKEN" "$CHLOG_PATH"; then
-            awk 'BEGIN{skip=0} /^## Commits/{print; print ""; system("cat changelog.tmp"); print ""; skip=1; next} skip==1 && NF==0{skip=0; next} {print}' "$CHLOG_PATH" > .chlog.tmp && mv .chlog.tmp "$CHLOG_PATH"
-          else
-            echo "Entry for this commit already present; skipping append."
-          fi
+                  if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+                    PR_NUMBER="${{ github.event.pull_request.number }}"
+                    PR_TITLE="${{ github.event.pull_request.title }}"
+                    PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+                    PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
+                    PR_ENTRY="$(printf "### 🚀 [%s](%s) by @%s\n- 🔀 PR #%s was approved and merged. ✅\n" "$PR_TITLE" "$PR_URL" "$PR_AUTHOR" "$PR_NUMBER")"
+                    if ! grep -Fq "$PR_ENTRY" "$CHLOG_PATH"; then
+                      awk '/^## Pull Requests \(approved\)/{print;print "";system("printf \"%s\" \"$PR_ENTRY\"");next}1' "$CHLOG_PATH" > .pr.tmp && mv .pr.tmp "$CHLOG_PATH"
+                    fi
+                  fi
 
-          if [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            PR_AUTHOR="${{ github.event.pull_request.user.login }}"
-            PR_URL="https://github.com/${{ github.repository }}/pull/$PR_NUMBER"
-            PR_ENTRY="$(printf "### 🚀 [%s](%s) by @%s\n- 🔀 PR #%s was approved and merged. ✅\n" "$PR_TITLE" "$PR_URL" "$PR_AUTHOR" "$PR_NUMBER")"
-            if ! grep -Fq "$PR_ENTRY" "$CHLOG_PATH"; then
-              awk '/^## Pull Requests \(approved\)/{print;print "";system("printf \"%s\" \"$PR_ENTRY\"");next}1' "$CHLOG_PATH" > .pr.tmp && mv .pr.tmp "$CHLOG_PATH"
-            fi
-          fi
+                  for ISSUE in ${{ steps.payload.outputs.closed_issues }}; do
+                    ISSUE_URL="https://github.com/${{ github.repository }}/issues/$ISSUE"
+                    ISSUE_ENTRY="$(printf "### ✅ [Issue #%s](%s) closed 🛠️\n" "$ISSUE" "$ISSUE_URL")"
+                    if ! grep -Fq "$ISSUE_ENTRY" "$CHLOG_PATH"; then
+                      awk '/^## Issues \(closed\)/{print;print "";system("printf \"%s\" \"$ISSUE_ENTRY\"");next}1' "$CHLOG_PATH" > .issues.tmp && mv .issues.tmp "$CHLOG_PATH"
+                    fi
+                  done
 
-          for ISSUE in ${{ steps.payload.outputs.closed_issues }}; do
-            ISSUE_URL="https://github.com/${{ github.repository }}/issues/$ISSUE"
-            ISSUE_ENTRY="$(printf "### ✅ [Issue #%s](%s) closed 🛠️\n" "$ISSUE" "$ISSUE_URL")"
-            if ! grep -Fq "$ISSUE_ENTRY" "$CHLOG_PATH"; then
-              awk '/^## Issues \(closed\)/{print;print "";system("printf \"%s\" \"$ISSUE_ENTRY\"");next}1' "$CHLOG_PATH" > .issues.tmp && mv .issues.tmp "$CHLOG_PATH"
-            fi
-          done
+                  rm -f changelog.tmp
 
-          rm -f changelog.tmp
+            - name: Detect changelog modifications
+              id: changelog_changed
+              shell: bash
+              run: |
+                  CHLOG_PATH="screeps_newbieland_net___21025/CHANGELOG.md"
+                  if ! git diff --quiet -- "$CHLOG_PATH"; then
+                    echo "changed=true" >> "$GITHUB_OUTPUT"
+                    echo "CHANGELOG.md modified."
+                  else
+                    echo "changed=false" >> "$GITHUB_OUTPUT"
+                    echo "CHANGELOG.md not modified; skipping PR."
+                  fi
 
-      - name: Detect changelog modifications
-        id: changelog_changed
-        shell: bash
-        run: |
-          CHLOG_PATH="screeps_newbieland_net___21025/CHANGELOG.md"
-          if ! git diff --quiet -- "$CHLOG_PATH"; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "CHANGELOG.md modified."
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "CHANGELOG.md not modified; skipping PR."
-          fi
+            - name: Create PR for CHANGELOG.md
+              id: cpr
+              if: steps.changelog_changed.outputs.changed == 'true'
+              uses: peter-evans/create-pull-request@v6
+              with:
+                  branch: chore/changelog-${{ github.run_id }}
+                  commit-message: 'chore(changelog): update for newbieland JS changes'
+                  title: 'Update CHANGELOG for newbieland JS changes'
+                  body: |
+                      This automated PR updates the scoped changelog for newbieland:
+                      - Commits that modify `screeps_newbieland_net___21025/default/**/*.js`
+                      - Merged PRs that modify those files
+                      - Issues auto-closed via closing keywords in those commits/PRs
+                  add-paths: |
+                      screeps_newbieland_net___21025/CHANGELOG.md
 
-      - name: Create PR for CHANGELOG.md
-        id: cpr
-        if: steps.changelog_changed.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: chore/changelog-${{ github.run_id }}
-          commit-message: "chore(changelog): update for newbieland JS changes"
-          title: "Update CHANGELOG for newbieland JS changes"
-          body: |
-            This automated PR updates the scoped changelog for newbieland:
-            - Commits that modify `screeps_newbieland_net___21025/default/**/*.js`
-            - Merged PRs that modify those files
-            - Issues auto-closed via closing keywords in those commits/PRs
-          add-paths: |
-            screeps_newbieland_net___21025/CHANGELOG.md
-
-      - name: Enable auto-merge (merge commit)
-        if: steps.cpr.outputs.pull-request-number && steps.changelog_changed.outputs.changed == 'true'
-        uses: peter-evans/enable-pull-request-automerge@v3
-        continue-on-error: true
-        with:
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: merge
-
+            - name: Enable auto-merge (merge commit)
+              if: steps.cpr.outputs.pull-request-number && steps.changelog_changed.outputs.changed == 'true'
+              uses: peter-evans/enable-pull-request-automerge@v3
+              continue-on-error: true
+              with:
+                  pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+                  merge-method: merge

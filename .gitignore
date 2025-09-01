@@ -17,6 +17,7 @@
 # Misc
 .env
 .gitattributes
+.prettierignore
 
 # Node.js
 node_modules/
