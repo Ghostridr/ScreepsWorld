@@ -1,3 +1,5 @@
+`Offline first development for the Screeps MMO game.`
+
 # ScreepsWorld
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](LICENSE)
@@ -228,3 +230,6 @@ This project is licensed under the `GNU General Public License v3.0`. See [LICEN
 * [ ] Add badges (CI, lint, tests).
 * [ ] Write `CONTRIBUTING.md` with hint ladder rules.
 * [ ] Create `.editorconfig`, ESLint + Prettier configs.
+
+---
+[![Back to top](https://img.shields.io/badge/Back%20to%20top-222?style=plastic&logo=github)](#screepsworld)

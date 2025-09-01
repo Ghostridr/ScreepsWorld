@@ -1,4 +1,6 @@
-# screeps.com (Training/Local sandbox)
+`Training/Local sandbox`
+
+# screeps
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](../LICENSE)
 
@@ -27,3 +29,6 @@ Related repo folders:
 ## License
 
 This folder inherits the repository’s license. See [LICENSE](../LICENSE) at the repo root.
+
+---
+[![Back to top](https://img.shields.io/badge/Back%20to%20top-222?style=plastic&logo=github)](#screeps)
