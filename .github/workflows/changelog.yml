@@ -12,12 +12,12 @@ on:
   push:
     # Only run when root-level *.js change
     paths:
-      - '*.js'
+      - 'src/**/*.js'
   pull_request:
     # Only act on merged PRs that touched root-level *.js
     types: [closed]
     paths:
-      - '*.js'
+      - 'src/**/*.js'
   workflow_dispatch:
 
 jobs:
@@ -50,8 +50,8 @@ jobs:
             HEAD_REF="${{ github.sha }}"
           fi
 
-          # Compute changed files and keep ONLY root-level *.js (no slashes)
-          CHANGED_FILES="$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^[^/]+\.js$' || true)"
+          # Compute changed files and keep ONLY src/**/*.js
+          CHANGED_FILES="$(git diff --name-only "$BASE_REF" "$HEAD_REF" | grep -E '^src/.*\.js$' || true)"
 
           {
             echo "changed_files<<EOF"
