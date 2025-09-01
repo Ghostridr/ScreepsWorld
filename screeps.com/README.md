@@ -1,11 +1,10 @@
-`Training/Local sandbox`
-
 # screeps
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](../LICENSE)
 
 [![Changelog Tracker (training)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml)
 
+`Training/Local sandbox`
 This folder is my local sandbox for the official Screeps MMO server (screeps.com). I use it to iterate on scripts safely in the Simulation » Training mode before uploading to the live world.
 
 ## Directory structure

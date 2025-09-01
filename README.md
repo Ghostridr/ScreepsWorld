@@ -1,11 +1,10 @@
-`Offline first development for the Screeps MMO game.`
-
 # ScreepsWorld
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](LICENSE)
 
 [![Changelog Tracker](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml) [![Changelog Tracker (training)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml) [![Changelog Tracker (newbieland)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml)
 
+`Offline first development for the Screeps MMO game.`
 *A learning-first JavaScript repo built by playing the MMO programming game **Screeps**.*
 
 > **Goal:** Use Screeps as a practical lab to learn modern JavaScript by designing a clean, testable bot architecture. This repo favors understanding, debugging habits, and data-driven design over “shipping a clever bot.”
