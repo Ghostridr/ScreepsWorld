@@ -10,11 +10,11 @@ concurrency:
 
 on:
     push:
-        # Only run when root-level *.js change
+        # Only run when src/ *.js change
         paths:
             - 'src/**/*.js'
     pull_request:
-        # Only act on merged PRs that touched root-level *.js
+        # Only act on merged PRs that touched src/ *.js
         types: [closed]
         paths:
             - 'src/**/*.js'
@@ -30,8 +30,8 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Determine changed ROOT .js files
-              id: root_changes
+            - name: Determine changed src/ .js files
+              id: src_changes
               shell: bash
               run: |
                   set -euo pipefail
@@ -60,16 +60,16 @@ jobs:
                   } >> "$GITHUB_OUTPUT"
 
                   if [ -n "$CHANGED_FILES" ]; then
-                    echo "Detected root JS changes:"
+                    echo "Detected src/ JS changes:"
                     echo "$CHANGED_FILES"
                   else
-                    echo "No root-level .js changes detected."
+                    echo "No src/ .js changes detected."
                   fi
 
             - name: Prepare changelog entry payload
               id: payload
               if: |
-                  steps.root_changes.outputs.changed_files != '' &&
+                  steps.src_changes.outputs.changed_files != '' &&
                   (
                     github.event_name == 'push' ||
                     (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
@@ -130,7 +130,7 @@ jobs:
             - name: Build entry file (Commits section)
               id: entry
               if: |
-                  steps.root_changes.outputs.changed_files != '' &&
+                  steps.src_changes.outputs.changed_files != '' &&
                   (
                     github.event_name == 'push' ||
                     (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
@@ -148,17 +148,17 @@ jobs:
                   echo "- 🟢 *Commit:* [${{ steps.payload.outputs.commit }}](https://github.com/${{ github.repository }}/commit/${{ steps.payload.outputs.commit }})" >> changelog.tmp
                   echo "- 👤 *Author:* ${{ steps.payload.outputs.author }}" >> changelog.tmp
                   echo "- 📅 *Date:* ${{ steps.payload.outputs.date }}" >> changelog.tmp
-                  echo "- 📦 *Changed root JS files:*" >> changelog.tmp
+                  echo "- 📦 *Changed src/ JS files:*" >> changelog.tmp
 
                   # List changed files with two-space indent then dash
                   while IFS= read -r file; do
                     [ -n "$file" ] && echo "  - $file" >> changelog.tmp
-                  done <<< "${{ steps.root_changes.outputs.changed_files }}"
+                  done <<< "${{ steps.src_changes.outputs.changed_files }}"
 
             - name: Ensure CHANGELOG.md skeleton and append sections
               id: apply_changelog
               if: |
-                  steps.root_changes.outputs.changed_files != '' &&
+                  steps.src_changes.outputs.changed_files != '' &&
                   (
                     github.event_name == 'push' ||
                     (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
@@ -239,12 +239,12 @@ jobs:
               uses: peter-evans/create-pull-request@v6
               with:
                   branch: chore/changelog-${{ github.run_id }}
-                  commit-message: 'chore(changelog): update for root JS changes'
-                  title: 'Update CHANGELOG for root JS changes'
+                  commit-message: 'chore(changelog): update for src/ JS changes'
+                  title: 'Update CHANGELOG for src/ JS changes'
                   body: |
                       This automated PR updates **CHANGELOG.md** for:
-                      - Commits that modify root-level `*.js` files
-                      - Merged PRs that modify root-level `*.js` files
+                      - Commits that modify src/ `*.js` files
+                      - Merged PRs that modify src/ `*.js` files
                       - Issues auto-closed via closing keywords in those commits/PRs
                   add-paths: |
                       CHANGELOG.md
