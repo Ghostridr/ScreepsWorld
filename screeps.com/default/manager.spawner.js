@@ -17,15 +17,25 @@ roleNames.forEach(role => {
 	try {
 		roleModules[role] = require('role.' + role);
 	} catch (e) {
-		console.log('Role not found:', role);
+		const details = [
+			'[manager.spawner] Failed to load role module: role.' + role,
+			'Error: ' + (e && e.message ? e.message : String(e)),
+			e && e.stack ? 'Stack: ' + e.stack : null,
+			'How to fix:',
+			"- Ensure file 'role." + role + ".js' exists in this training folder.",
+			'- Check for typos and case-sensitivity (file names are case-sensitive).',
+			"- Verify the module exports: module.exports = { run: function(creep) { ... } } or similar.",
+			"- If you're following a tutorial step, it's safe to ignore this temporarily."
+		].filter(Boolean).join('\n');
+		console.error(details);
 	}
 });
 
 // Spawn loop
 module.exports.loop = function() {
-	for (let spawnName in Game.spawns) {
+	for (const spawnName in Game.spawns) {
 		const spawn = Game.spawns[spawnName];
-		for (let role of roleNames) {
+		for (const role of roleNames) {
 			const creepsWithRole = _.filter(Game.creeps, c => c.memory.role === role);
 			if (creepsWithRole.length < desiredCounts[role]) {
 				// Body selection (to be improved)
@@ -33,8 +43,8 @@ module.exports.loop = function() {
 				if (role === 'builder') body = [WORK, WORK, CARRY, MOVE];
 				if (role === 'upgrader') body = [WORK, CARRY, MOVE, MOVE];
 				if (role === 'harvester') body = [WORK, CARRY, MOVE];
-				let newName = role + Game.time;
-				let result = spawn.spawnCreep(body, newName, {memory: {role: role}});
+				const newName = role + Game.time;
+				const result = spawn.spawnCreep(body, newName, {memory: {role: role}});
 				// Spawn handler
 				if (result === OK) {
 					console.log('Spawning new ' + role + ': ' + newName);
