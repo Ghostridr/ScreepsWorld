@@ -1,4 +1,5 @@
 # Changelog
+
 ## Commits
 
 ### 🟢 docs: update README files to include Back to top links and improve section headings
@@ -9,8 +10,6 @@
 - 📦 *Changed root JS files:*
   - screeps.com/default/manager.spawner.js
 
-
 ## Issues (closed)
 
 ## Pull Requests (approved)
-
