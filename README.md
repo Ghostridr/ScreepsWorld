@@ -14,8 +14,9 @@
 * [Learning Roadmap (Milestones)](#learning-roadmap-milestones)
 * [Repository Structure](#repository-structure)
 * [Deployment](#deployment)
-* [Glossary](#glossary)
 * [Changelog](#changelog)
+* [Resources](#resources)
+* [Glossary](#glossary)
 * [License](#license)
 
 ---
@@ -153,6 +154,48 @@ exports.loop = function () {
 
 ---
 
+## Changelog
+
+A maintained log can be viewed at [CHANGELOG.md](CHANGELOG.md) for a detailed history of `.js` file changes within `src/`. For changes outside of this, please refer to the commit history.
+
+I maintain a separate `CHANGELOG.md` for each server within **ScreepsWorld**. You can find them in the respective server directories. An index of all documentation can be found in the [Resources](#resources) section.
+
+---
+
+## Resources
+
+1) 📚 **Screeps (Official)**
+   * 🔗 [Discord](https://discord.gg/screeps)
+   * 🔗 [Documentation](https://docs.screeps.com/)
+   * 🔗 [Forum](https://screeps.com/forum/)
+   * 🔗 [GitHub ⭐](https://github.com/screeps)
+   * 🔗 [Site ⭐](https://screeps.com)
+   * 🔗 [Steam](https://store.steampowered.com/app/464350/Screeps/)
+   * 🔗 [Wiki ⭐](https://wiki.screepspl.us)
+   * 🔗 [YouTube](https://www.youtube.com/@screeps3952)
+2) 📚 **JavaScript**
+   * 🔗 [JavaScript Info](https://javascript.info)
+   * 🔗 [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+   * 🔗 [You Don't Know JS (book series)](https://github.com/getify/You-Dont-Know-JS)
+   * 🔗 [Eloquent JavaScript (book)](https://eloquentjavascript.net/)
+3) 📚 **Repository Doc Locations**
+   * [docs/](docs/)
+     * 📖 [Architecture](docs/architecture.md)
+     * 📖 [Getting Started](docs/getting-started.md)
+   * [root/](root/)
+     * 📖 [README.md](README.md)
+     * 📜 [CHANGELOG.md](CHANGELOG.md)
+     * 📖 [CONTRIBUTING.md](CONTRIBUTING.md)
+     * 📖 [LICENSE](LICENSE)
+   * [Training Server](screeps.com)
+     * 📜 [CHANGELOG.md](screeps.com/CHANGELOG.md)
+     * 📖 [README.md](screeps.com/README.md)
+   * [NewbieLand](screeps_newbieland_net___21025)
+     * 📜 [CHANGELOG.md](screeps_newbieland_net___21025/CHANGELOG.md)
+     * 📖 [README.md](screeps_newbieland_net___21025/README.md)
+
+---
+
 ## Glossary
 
 * **Pure function:** No side-effects; same input → same output.
@@ -162,21 +205,24 @@ exports.loop = function () {
 
 ---
 
-## Changelog
-
-A maintained log can be viewed at [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes.
-
----
-
 ## License
 
-See [LICENSE](LICENSE) for details.
+This project is licensed under the `GNU General Public License v3.0`. See [LICENSE](LICENSE) for details. A quick summary of the license is as follows:
+
+* You are free to use, modify, and distribute this project.
+* Any derivative work must also be licensed under the same or a compatible license.
+* There is no warranty for the software, and the authors are not liable for any damages.
+* You must include a copy of the license in any distribution of the software.
+* This license does not grant you any rights to use the trademarks or other intellectual property of the authors.
 
 ---
 
 ### Personal Notes & TODOs
 
 * [x] Create `CHANGELOG.md` and a working, custom `changelog.yml`
+* [x] Create `README.md` with project overview and setup instructions.
+* [ ] Create `tests/` directory and add unit tests.
+* [ ] Create other `changelog.yml` files for different servers with a `CHANGELOG.md`.
 * [ ] Add badges (CI, lint, tests).
 * [ ] Write `CONTRIBUTING.md` with hint ladder rules.
 * [ ] Create `.editorconfig`, ESLint + Prettier configs.

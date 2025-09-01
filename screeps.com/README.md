@@ -19,3 +19,7 @@ Related repo folders:
 
 - This codebase uses CommonJS (`module.exports` / `require`) as expected by the Screeps runtime.
 - Roles are intentionally small and composable so they’re easy to test in isolation and then verify in Training.
+
+## License
+
+This folder inherits the repository’s license. See [LICENSE](../LICENSE) at the repo root.
