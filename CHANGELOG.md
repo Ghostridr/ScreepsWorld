@@ -2,6 +2,18 @@
 
 ## Commits
 
+### 🟢 Refactor role checks to use strict equality, enhance error logging in manager.spawner, and improve test coverage for main and manager.spawner modules
+
+- 🟢 *Commit:* [9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b](https://github.com/Ghostridr/ScreepsWorld/commit/9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-01 06:05:47
+- 📦 *Changed root JS files:*
+  - src/main.js
+  - src/manager.spawner.js
+  - src/role.builder.js
+  - src/role.harvester.js
+  - src/role.upgrader.js
+
 ### 🟢 feat: implement auto-spawn logic for creeps and add initial test for manager.spawner
 
 - 🟢 *Commit:* [b1566fe65230369bbdaa346bed274bec12ab6ca6](https://github.com/Ghostridr/ScreepsWorld/commit/b1566fe65230369bbdaa346bed274bec12ab6ca6)
