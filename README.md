@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](LICENSE)
 
 [![CI](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml) [![PR Labeler](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml)
-<br>
+
 [![Changelog](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml) [![Changelog (training)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml) [![Changelog (newbieland)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml)
 
 `Offline Development` _A learning-first JavaScript repo built by playing the MMO programming game **Screeps**._
@@ -186,8 +186,26 @@ I maintain a separate `CHANGELOG.md` for each server within **ScreepsWorld**. Yo
 3. 📚 **Repository Doc Locations**
    - 📁 [.github/](.github/)
      - 🤖 [Copilot Instructions](.github/copilot-instructions.md)
-     - 📁 [instructions/](.github/instructions.md)
+     - 📁 [instructions/](.github/instructions/)
        - 🤖 [screeps-teacher.instructions.md](.github/instructions/screeps-teacher.instructions.md)
+     - 📁 [prompts/](.github/prompts/)
+       - 📖 [README.md](.github/prompts/README.md)
+       - 🧑‍🏫 [Screeps CPU Auditor](.github/prompts/screeps-cpu-auditor.prompt.md)
+       - 🧑‍🏫 [Screeps Defense Tactician](.github/prompts/screeps-defense-tactician.prompt.md)
+       - 🧑‍🏫 [Screeps Economy Tuner](.github/prompts/screeps-economy-tuner.prompt.md)
+       - 🧑‍🏫 [Screeps Incident Triage](.github/prompts/screeps-incident-triage.prompt.md)
+       - 🧑‍🏫 [Screeps Layout & Roads Coach](.github/prompts/screeps-layout-roads.prompt.md)
+       - 🧑‍🏫 [Screeps Lesson](.github/prompts/screeps-lesson.prompt.md)
+       - 🧑‍🏫 [Screeps Links Planner](.github/prompts/screeps-links-planner.prompt.md)
+       - 🧑‍🏫 [Screeps Metrics Dashboard](.github/prompts/screeps-metrics-dashboard.prompt.md)
+       - 🧑‍🏫 [Screeps Modularization Guide](.github/prompts/screeps-modularization-guide.prompt.md)
+       - 🧑‍🏫 [Screeps Pathfinding Lab](.github/prompts/screeps-pathfinding-lab.prompt.md)
+       - 🧑‍🏫 [Screeps Queue Architect](.github/prompts/screeps-queue-architect.prompt.md)
+       - 🧑‍🏫 [Screeps RCL Milestone Navigator](.github/prompts/screeps-rcl-navigator.prompt.md)
+       - 🧑‍🏫 [Screeps Remote Mining](.github/prompts/screeps-remote-mining.prompt.md)
+       - 🧑‍🏫 [Screeps Role Coach](.github/prompts/screeps-role-coach.prompt.md)
+       - 🧑‍🏫 [Screeps Terminal Market](.github/prompts/screeps-terminal-market.prompt.md)
+       - 🧑‍🏫 [Screeps Testing Tutor](.github/prompts/screeps-testing-tutor.prompt.md)
    - 📁 [configs/](configs/)
      - 📖 [README.md](configs/README.md)
    - 📁 [docs/](docs/)
