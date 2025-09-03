@@ -40,7 +40,7 @@ module.exports.loop = function () {
         // even-indexed rings are staggered by 22.5° to reduce alignment artifacts.
         const terrain = room.getTerrain();
         for (let ringIdx = 0; need > 0 && ringIdx < 6; ringIdx++) {
-            const r = 2 + ringIdx * 2; // 2,4,6,... ensures a 1-tile walkway around spawn and between rings
+            const r = 3 + ringIdx * 2; // 2,4,6,... ensures a 1-tile walkway around spawn and between rings
             /** @type {[number, number][]} */
             const offsets = [];
             // Manhattan perimeter: |dx| + |dy| == r
