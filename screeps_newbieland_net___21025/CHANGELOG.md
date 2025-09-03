@@ -2,6 +2,20 @@
 
 ## Commits
 
+### 🟢 feat: Implement threat detection and retreat behavior for creeps
+
+- 🟢 *Commit:* [c31723e19c06bb2418530b427569c0bd9052a2e4](https://github.com/Ghostridr/ScreepsWorld/commit/c31723e19c06bb2418530b427569c0bd9052a2e4)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-03 06:16:33
+- 📦 *Changed newbieland JS files:*
+  - screeps_newbieland_net___21025/default/main.js
+  - screeps_newbieland_net___21025/default/manager.extension.js
+  - screeps_newbieland_net___21025/default/manager.road.js
+  - screeps_newbieland_net___21025/default/manager.wall.js
+  - screeps_newbieland_net___21025/default/role.harvester.js
+  - screeps_newbieland_net___21025/default/service.auto.detect.js
+  - screeps_newbieland_net___21025/default/service.say.js
+
 ### 🟢 Refactor tower management and enhance builder, harvester, hauler, and miner roles with threat detection
 
 - 🟢 *Commit:* [88dbd14e008bdba1eb482968cad040146d41068e](https://github.com/Ghostridr/ScreepsWorld/commit/88dbd14e008bdba1eb482968cad040146d41068e)
