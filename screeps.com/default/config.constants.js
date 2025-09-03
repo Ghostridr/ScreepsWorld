@@ -11,6 +11,8 @@ Config.ROLE_COUNTS = {
     builder: 1,
     miner: 0,
     hauler: 0,
+    healer: 0,
+    repairer: 0,
 };
 
 // Dynamic desired counts per RCL (adaptive policy). Per-room overrides can still use ROLE_COUNTS.
@@ -55,7 +57,7 @@ Config.getDesiredRoleCounts = function (room) {
     var rangeAvg = avgSourceRangeToSpawn(room);
 
     // Start with safe defaults
-    var d = { harvester: 2, upgrader: 1, builder: 1, miner: 0, hauler: 0 };
+    var d = { harvester: 2, upgrader: 1, builder: 1, miner: 0, hauler: 0, healer: 0, repairer: 0 };
 
     if (lvl <= 1) {
         // Bootstrapping: harvesters do everything; 1–2 builders if sites exist
@@ -71,6 +73,11 @@ Config.getDesiredRoleCounts = function (room) {
         d.harvester = miners >= sources ? 1 : Math.max(2, Math.min(4, sources * 2));
         d.hauler = miners > 0 ? 1 : 0; // one hauler once we have at least one miner seat
         d.builder = Math.min(3, Math.max(1, Math.ceil(sites / 4)));
+        // Early repairer: if many damaged structures, spawn 1
+        var damagedEarly = room.find
+            ? room.find(FIND_STRUCTURES, { filter: (s) => s.hits < s.hitsMax * 0.7 }).length
+            : 0;
+        d.repairer = damagedEarly > 10 ? 1 : 0;
         d.upgrader = 2;
     } else {
         // RCL3+: stabilized economy
@@ -80,8 +87,54 @@ Config.getDesiredRoleCounts = function (room) {
         d.hauler = Math.min(5, haulFactor + (hasStorage ? 1 : 0));
         d.harvester = 0; // miners replace harvesters
         d.builder = Math.min(4, Math.max(1, 1 + Math.floor(sites / 5)));
+        // Repairers scale with decay load: count structures below floor
+        try {
+            var Repair = require('service.repair');
+            var F = Repair.floors(room);
+            var below = room.find(FIND_STRUCTURES, {
+                filter: function (s) {
+                    if (!s.hits || !s.hitsMax) return false;
+                    var cap = 0;
+                    if (s.structureType === STRUCTURE_CONTAINER) cap = F.container;
+                    else if (s.structureType === STRUCTURE_ROAD) cap = F.road;
+                    else if (s.structureType === STRUCTURE_RAMPART) cap = F.rampart;
+                    else if (s.structureType === STRUCTURE_WALL) cap = F.wall;
+                    else if (s.structureType === STRUCTURE_TOWER) cap = F.tower;
+                    if (!cap) return false;
+                    return s.hits < Math.min(s.hitsMax, cap);
+                },
+            }).length;
+            d.repairer = Math.min(3, Math.max(0, Math.ceil(below / 30)));
+        } catch (e) {
+            void e;
+        }
         // Upgraders: increase when storage has a healthy bank
         d.upgrader = hasStorage ? (storageEnergy > 40000 ? 4 : 3) : 2;
+    }
+
+    // Healers: unlocked when we can afford [HEAL, MOVE] and increase with RCL; scale up under threat
+    try {
+        var capAvail = (room && room.energyCapacityAvailable) || 0;
+        var healerUnlocked = capAvail >= 300; // [HEAL, MOVE] costs 300
+        if (healerUnlocked) {
+            // Base minimum by RCL (always keep at least this many when unlocked)
+            var baseMin;
+            if (lvl <= 3)
+                baseMin = 1; // early game
+            else if (lvl <= 6) baseMin = 2;
+            else baseMin = 3; // RCL7+
+            d.healer = Math.max(d.healer || 0, baseMin);
+
+            // Situational scaling: add more when hostiles present
+            var hostileCount = room.find ? room.find(FIND_HOSTILE_CREEPS).length : 0;
+            if (hostileCount > 0) {
+                // Add ~1 per 3 hostiles (rounded up)
+                var extra = Math.ceil(hostileCount / 3);
+                d.healer = Math.max(d.healer, baseMin + extra);
+            }
+        }
+    } catch (e) {
+        void e;
     }
 
     // Safety rails
@@ -154,6 +207,20 @@ Config.getBodyTemplate = function (role, room) {
         // Ensure at least one MOVE
         if (bw.indexOf(MOVE) === -1) bw.push(MOVE);
         return bw.length ? bw : [WORK, CARRY, MOVE];
+    }
+    if (role === 'repairer') {
+        // Repairers behave like builders: WORK+CARRY+MOVE scaled; ensure mobility
+        var rw = repeatPattern([WORK, CARRY, MOVE], cap, maxParts);
+        if (rw.indexOf(MOVE) === -1) rw.push(MOVE);
+        return rw.length ? rw : [WORK, CARRY, MOVE];
+    }
+    if (role === 'healer') {
+        // Healer scaling: early keep 1:1 for mobility; mid/late pack 2 HEAL per MOVE (roads assumed)
+        var lvlH = (room && room.controller && room.controller.level) || 1;
+        var pattern = lvlH >= 6 ? [HEAL, HEAL, MOVE] : [HEAL, MOVE];
+        var hk = repeatPattern(pattern, cap, maxParts);
+        if (hk.indexOf(MOVE) === -1) hk.push(MOVE);
+        return hk.length ? hk : [HEAL, MOVE];
     }
     return [WORK, CARRY, MOVE];
 };

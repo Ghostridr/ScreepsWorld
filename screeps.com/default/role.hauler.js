@@ -1,5 +1,4 @@
 /* eslint-env screeps */
-/* global ERR_INVALID_TARGET, ERR_NOT_ENOUGH_RESOURCES, ERR_FULL */
 // role.hauler.js — move energy from containers/ground to sinks (spawn/extensions/towers/storage)
 const Log = require('util.logger').withTag('hauler');
 const G = require('helper.guidance');
@@ -8,6 +7,7 @@ const Paths = require('config.paths');
 const HaulQ = require('service.haul');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
+const Threat = require('service.auto.detect');
 
 module.exports = {
     run(creep) {
@@ -25,6 +25,15 @@ module.exports = {
             if (!src || !dst) {
                 HaulQ.release(creep.room.name, job.id, 'ABORT');
                 creep.memory.jobId = null;
+                return;
+            }
+            if (
+                (src && Threat.isDanger(src.pos, creep.room.name)) ||
+                (dst && Threat.isDanger(dst.pos, creep.room.name))
+            ) {
+                HaulQ.release(creep.room.name, job.id, 'ABORT_DANGER');
+                creep.memory.jobId = null;
+                Say.changed(creep, 'BLOCKED');
                 return;
             }
             if (creep.store.getFreeCapacity() > 0) {
@@ -64,7 +73,7 @@ module.exports = {
             }
         } else if (carrying) {
             // Prioritize sinks: extensions/spawns/towers, then storage
-            const sinks = creep.room.find(FIND_STRUCTURES, {
+            const sinksAll = creep.room.find(FIND_STRUCTURES, {
                 filter: (s) =>
                     ((s.structureType === STRUCTURE_EXTENSION ||
                         s.structureType === STRUCTURE_SPAWN ||
@@ -73,6 +82,7 @@ module.exports = {
                     (s.structureType === STRUCTURE_STORAGE &&
                         s.store.getFreeCapacity(RESOURCE_ENERGY) > 0),
             });
+            const sinks = sinksAll.filter((s) => !Threat.isDanger(s.pos, creep.room.name));
             if (sinks.length) {
                 const target = creep.pos.findClosestByPath(sinks);
                 Say.changed(creep, 'TRANSFER');
@@ -88,10 +98,13 @@ module.exports = {
             }
         } else {
             // Withdraw from nearest container with energy; fallback to pickup dropped energy nearby
-            const container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+            const containers = creep.room.find(FIND_STRUCTURES, {
                 filter: (s) =>
-                    s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0,
+                    s.structureType === STRUCTURE_CONTAINER &&
+                    s.store[RESOURCE_ENERGY] > 0 &&
+                    !Threat.isDanger(s.pos, creep.room.name),
             });
+            const container = containers.length ? creep.pos.findClosestByPath(containers) : null;
             if (container) {
                 Say.changed(creep, 'WITHDRAW');
                 if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
@@ -102,14 +115,18 @@ module.exports = {
                 }
             } else {
                 const pile = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-                    filter: (r) => r.resourceType === RESOURCE_ENERGY && r.amount >= 50,
+                    filter: (r) =>
+                        r.resourceType === RESOURCE_ENERGY &&
+                        r.amount >= 50 &&
+                        !Threat.isDanger(r.pos, creep.room.name),
                 });
                 if (pile) {
                     if (creep.pickup(pile) === ERR_NOT_IN_RANGE) creep.moveTo(pile);
                 } else {
                     // As a last resort, hover near storage/spawn
                     const hub = creep.room.storage || creep.pos.findClosestByPath(FIND_MY_SPAWNS);
-                    if (hub) creep.moveTo(hub, { visualizePathStyle: Paths.roles.hauler.move });
+                    if (hub && !Threat.isDanger(hub.pos, creep.room.name))
+                        creep.moveTo(hub, { visualizePathStyle: Paths.roles.hauler.move });
                     Say.every(creep, 'IDLE', 80);
                 }
             }

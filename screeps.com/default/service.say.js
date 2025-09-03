@@ -4,17 +4,18 @@
 
 const CATALOG = {
     // Primary tasks (emoji + short verb)
-    HARVEST: '🔄harvest',
-    WITHDRAW: '⬇️withdraw',
-    TRANSFER: '⬆️transfer',
-    BUILD: '🚧build',
-    UPG: '⚡upgrade',
-    REPAIR: '🛠repair',
-    MINE: '⛏mine',
-    HAUL: '📦haul',
+    HARVEST: '🌾',
+    WITHDRAW: '⬇️',
+    TRANSFER: '⬆️',
+    BUILD: '🚧',
+    UPG: '🔨',
+    REPAIR: '🛠',
+    HEAL: '❤️',
+    MINE: '⛏',
+    HAUL: '📦',
     IDLE: '…',
-    MOVE: '➡️moving',
-    BLOCKED: '⛔blocked',
+    MOVE: '🚶',
+    BLOCKED: '⛔',
     // Structures (tags)
     EXT: '🧩 ext',
     CONT: '🔲 cont',
@@ -77,11 +78,11 @@ function cfg() {
     if (typeof s.minInterval !== 'number') s.minInterval = DEFAULTS.minInterval;
     if (typeof s.bucketFloor !== 'number') s.bucketFloor = DEFAULTS.bucketFloor;
     if (typeof s.funny !== 'boolean') s.funny = true;
-    if (typeof s.funEvery !== 'number') s.funEvery = 200; // ticks cadence
-    if (typeof s.funBucketFloor !== 'number') s.funBucketFloor = 4000;
+    if (typeof s.funEvery !== 'number') s.funEvery = 100; // ticks cadence
+    if (typeof s.funBucketFloor !== 'number') s.funBucketFloor = 2000;
     if (typeof s.funnyLong !== 'boolean') s.funnyLong = true;
-    if (typeof s.funLongEvery !== 'number') s.funLongEvery = 800; // rarer cadence
-    if (typeof s.funLongBucketFloor !== 'number') s.funLongBucketFloor = 8000;
+    if (typeof s.funLongEvery !== 'number') s.funLongEvery = 400; // rarer cadence
+    if (typeof s.funLongBucketFloor !== 'number') s.funLongBucketFloor = 4000;
     return s;
 }
 
@@ -92,9 +93,21 @@ function shortNum(n) {
     return (k >= 10 ? Math.round(k) : k.toFixed(1)) + 'k';
 }
 
+function heartByPct(p) {
+    var v = typeof p === 'number' ? p : parseInt(p, 10);
+    if (!(v >= 0)) return '❤️';
+    if (v < 3) return '🖤'; // black
+    if (v < 9) return '💙'; // blue
+    if (v < 24) return '❤️'; // red
+    if (v < 49) return '🧡'; // orange
+    if (v < 74) return '💛'; // yellow
+    return '💚'; // green
+}
+
 function buildMsg(key, opts) {
     opts = opts || {};
-    const base = CATALOG[key] || key;
+    // Dynamic heart color for HEAL based on pct, default red otherwise
+    const base = key === 'HEAL' && opts.pct != null ? heartByPct(opts.pct) : CATALOG[key] || key;
     const n = opts.n != null ? shortNum(opts.n) : '';
     const pct = opts.pct != null ? Math.max(0, Math.min(100, Math.round(opts.pct))) + '%' : '';
     // Prefer including number; drop extras if too long
@@ -186,6 +199,43 @@ Say.set = function (key, val) {
 };
 
 Say.config = cfg;
+
+// healer-specific flavor line: randomly say a short quip by HP percent.
+// Does not override same-tick HEAL bubbles (checks _sayTick) and respects CPU/bucket throttles.
+// Usage: Say.healQuip(creep, pct)
+Say.healQuip = function (creep, pct) {
+    // Don't say if we already spoke this tick (e.g., HEAL bubble)
+    if (creep && creep.memory && creep.memory._sayTick === Game.time) return;
+    // Light randomization to avoid spam: ~1/5 chance and only on a soft cadence
+    if (Game.time % 3 !== 0 && Math.random() > 0.2) return;
+
+    var v = typeof pct === 'number' ? pct : parseInt(pct, 10);
+    if (!(v >= 0)) v = 0;
+
+    var pool;
+    if (v < 3)
+        pool = [
+            'NEAR DEATH',
+            'stop dying',
+            'hold on',
+            'clear',
+            'stay with us',
+            'biting dust',
+            '... bucket',
+            'praying',
+        ];
+    else if (v < 9) pool = ['stop bleeding', 'hang in', 'survivor', 'four'];
+    else if (v < 24) pool = ["you'll live", 'patched', 'wimp', 'ugh'];
+    else if (v < 49) pool = ['steady', 'stay back', 'big baby', 'why me'];
+    else if (v < 75)
+        pool = ['almost there', 'you got this', 'keep it up', 'no crying', 'bandaging'];
+    else pool = ["you're g2g", 'good to go', 'full health', 'all better', 'healed up'];
+
+    if (!pool || !pool.length) return;
+    var msg = pool[randInt(0, pool.length - 1)];
+    // Use normal shouldSpeak gating; msg differs from last HEAL bubble so it will pass without force
+    if (shouldSpeak(creep, msg, {})) doSay(creep, msg);
+};
 
 // Periodic funny line for morale; respects CPU bucket and cadence.
 Say.funny = function (creep, n) {

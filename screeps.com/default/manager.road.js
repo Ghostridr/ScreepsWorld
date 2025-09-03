@@ -1,7 +1,6 @@
 /* eslint-env screeps */
 // manager.road.js — Place roads on most direct lines between key points.
 // Lightweight: lay at most one site per tick per room.
-/* global PathFinder, ERR_INVALID_TARGET, ERR_FULL, STRUCTURE_ROAD */
 const Log = require('util.logger').withTag('roads');
 const G = require('helper.guidance');
 

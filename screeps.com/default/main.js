@@ -11,6 +11,8 @@ var Upgrader = require('role.upgrader');
 var Builder = require('role.builder');
 var Miner = require('role.miner');
 var Hauler = require('role.hauler');
+var Healer = require('role.healer');
+var Repairer = require('role.repairer');
 var Log = require('util.logger');
 var Config = require('config.constants');
 var HaulQ = require('service.haul');
@@ -19,6 +21,7 @@ var BuildSvc = require('service.build');
 var Heartbeat = require('util.heartbeat');
 var Names = require('catalog.names');
 var Cache = require('util.caching');
+var Threat = require('service.auto.detect');
 
 module.exports.loop = function () {
     // Initialize configurable defaults (idempotent)
@@ -36,6 +39,9 @@ module.exports.loop = function () {
     if (mgrExt && typeof mgrExt.loop === 'function') {
         mgrExt.loop();
     }
+    // Threat scan early
+    for (const roomName in Game.rooms) Threat.scan(Game.rooms[roomName]);
+
     // Enqueue refill jobs for sinks that need energy (simple scan)
     for (const roomName in Game.rooms) {
         const room = Game.rooms[roomName];
@@ -103,7 +109,18 @@ module.exports.loop = function () {
         if (creep.memory.role === 'miner') {
             Miner.run(creep);
         }
+        // Healer role
+        if (creep.memory.role === 'healer') {
+            Healer.run(creep);
+        }
+        // Repairer role
+        if (creep.memory.role === 'repairer') {
+            Repairer.run(creep);
+        }
     }
+
+    // Enforce threat retreat/hold after roles so it can override movement intents
+    for (const roomName in Game.rooms) Threat.enforce(Game.rooms[roomName]);
 
     // Heartbeat/role-mix logs
     if (Heartbeat && typeof Heartbeat.run === 'function') Heartbeat.run();
@@ -126,5 +143,4 @@ module.exports.loop = function () {
             delete Memory.creeps[name];
         }
     }
-    // Can I recycle creeps? Check tomorrow
 };

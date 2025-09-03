@@ -1,6 +1,7 @@
 /* eslint-env screeps */
 // service.sources.js — Source registry and simple seat claims for miners
 // Single writer of Memory.rooms[room].sources
+const Threat = require('service.auto.detect');
 
 function ensureRoom(roomName) {
     if (!Memory.rooms) Memory.rooms = {};
@@ -323,5 +324,40 @@ module.exports = {
             }
         }
         return null;
+    },
+
+    // Threat-aware: claim the nearest free container seat to pos, skipping seats in danger.
+    // Returns { sourceId, containerId } or null if none safe.
+    findAndClaimNearestFreeSeatSafe(roomName, creepName, pos) {
+        const room = Game.rooms[roomName];
+        if (!room) return null;
+        const rec = index(room);
+        const candidates = [];
+        for (const sid in rec.byId) {
+            if (!Object.prototype.hasOwnProperty.call(rec.byId, sid)) continue;
+            const r = rec.byId[sid];
+            const claims = r.claims || {};
+            const containers = r.containers || [];
+            for (let i = 0; i < containers.length; i++) {
+                const cid = containers[i];
+                if (claims[cid]) continue;
+                const obj = Game.getObjectById(cid);
+                if (!obj) continue;
+                if (Threat && Threat.isDanger && Threat.isDanger(obj.pos, room.name)) continue;
+                const d = pos && pos.getRangeTo ? pos.getRangeTo(obj) : 50;
+                candidates.push({ sid, cid, d });
+            }
+        }
+        if (!candidates.length) return null;
+        candidates.sort((a, b) => a.d - b.d);
+        const pick = candidates[0];
+        // Claim it atomically in Memory (single writer)
+        const r = rec.byId[pick.sid];
+        const claims = r.claims || (r.claims = {});
+        if (claims[pick.cid]) return null; // lost race
+        claims[pick.cid] = creepName;
+        // Drop any bare claim this creep held
+        this.releaseBare(roomName, creepName);
+        return { sourceId: pick.sid, containerId: pick.cid };
     },
 };

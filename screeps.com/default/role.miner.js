@@ -8,11 +8,39 @@ const Paths = require('config.paths');
 const Sources = require('service.sources');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
+const Threat = require('service.auto.detect');
 
 module.exports = {
     run(creep) {
         let src = Game.getObjectById(creep.memory.srcId);
         let box = Game.getObjectById(creep.memory.containerId);
+
+        // If seated but the seat is threatened, release and re-claim a safe seat
+        if (box && Threat.isDanger(box.pos, creep.room.name)) {
+            Say.changed(creep, 'RESEAT');
+            Sources.releaseMinerSeat(creep.room.name, creep.name);
+            creep.memory.containerId = null;
+            const reseat = Sources.findAndClaimNearestFreeSeatSafe(
+                creep.room.name,
+                creep.name,
+                creep.pos
+            );
+            if (reseat && reseat.containerId) {
+                creep.memory.srcId = reseat.sourceId;
+                creep.memory.containerId = reseat.containerId;
+                src = Game.getObjectById(reseat.sourceId) || src;
+                box = Game.getObjectById(reseat.containerId);
+                Log.onChange(
+                    `miner.seat.${creep.room.name}.${creep.name}`,
+                    reseat.sourceId + ':' + reseat.containerId,
+                    `${creep.name} claimed safe seat ${reseat.containerId}`,
+                    'info'
+                );
+            } else {
+                // No safe seat available; proceed in bare mode below
+                box = null;
+            }
+        }
 
         // If no source yet, take a bare assignment by spawn-order policy
         if (!src) {
@@ -29,8 +57,26 @@ module.exports = {
         }
         if (!src) return; // no source yet
 
-        // If container isn't built yet: operate in "bare" mode (harvest and haul to spawn/extensions)
+        // If no assigned/sensed container: try to claim the nearest safe seat; else operate bare.
         if (!box) {
+            // First, try to claim nearest safe free container seat (skip threatened locations)
+            const seat = Sources.findAndClaimNearestFreeSeatSafe(
+                creep.room.name,
+                creep.name,
+                creep.pos
+            );
+            if (seat && seat.containerId) {
+                creep.memory.srcId = seat.sourceId;
+                creep.memory.containerId = seat.containerId;
+                src = Game.getObjectById(seat.sourceId) || src;
+                box = Game.getObjectById(seat.containerId);
+                Log.onChange(
+                    `miner.seat.${creep.room.name}.${creep.name}`,
+                    seat.sourceId + ':' + seat.containerId,
+                    `${creep.name} claimed seat ${seat.containerId}`,
+                    'info'
+                );
+            }
             // If a container has appeared next to the source, adopt it seamlessly
             const near = src.pos.findInRange(FIND_STRUCTURES, 1, {
                 filter: (s) => s.structureType === STRUCTURE_CONTAINER,
@@ -43,6 +89,12 @@ module.exports = {
                     creep.memory.containerId = claimed.containerId;
                     src = Game.getObjectById(claimed.sourceId);
                     box = Game.getObjectById(claimed.containerId);
+                    Log.onChange(
+                        `miner.seat.${creep.room.name}.${creep.name}`,
+                        claimed.sourceId + ':' + claimed.containerId,
+                        `${creep.name} adopted seat ${claimed.containerId}`,
+                        'info'
+                    );
                 } else {
                     // Fallback if claim fails (e.g., race): still remember local box for now
                     creep.memory.containerId = near[0].id;
@@ -53,6 +105,10 @@ module.exports = {
             if (!box) {
                 if (creep.store.getFreeCapacity() > 0) {
                     // Move within harvest range and mine
+                    if (Threat.isDanger(src.pos, creep.room.name)) {
+                        Say.changed(creep, 'BLOCKED');
+                        return;
+                    }
                     if (creep.pos.getRangeTo(src) > 1) {
                         Say.changed(creep, 'MOVE');
                         creep.moveTo(src, {

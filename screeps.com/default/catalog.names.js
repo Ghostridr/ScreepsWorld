@@ -66,6 +66,30 @@ const Catalog = {
         'Crate',
         'Skid',
     ],
+    healer: [
+        'Medic',
+        'Remedy',
+        'Salve',
+        'Tourniquet',
+        'FirstAid',
+        'Patch',
+        'Suture',
+        'Bandage',
+        'Triager',
+        'Vial',
+    ],
+    repairer: [
+        'Wrench',
+        'Spanner',
+        'Putty',
+        'Patchkit',
+        'Solder',
+        'Epoxy',
+        'Caulk',
+        'Rivet',
+        'Mender',
+        'Fixit',
+    ],
 };
 
 // Local fallback store for environments without Memory (e.g., Jest tests)

@@ -145,6 +145,11 @@ P.roles = {
         move: ['move', Colors.palette.green],
         blocked: ['blocked', Colors.palette.red],
     }),
+    healer: makeRoleStyles({
+        heal: ['normal', Colors.palette.green],
+        move: ['move', Colors.palette.green],
+        blocked: ['blocked', Colors.palette.red],
+    }),
 };
 
 // Manager/service path styles (planning visuals)

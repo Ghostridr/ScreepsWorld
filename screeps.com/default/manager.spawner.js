@@ -50,6 +50,7 @@ module.exports.loop = function () {
             // Cheap, safe minimum kits per role
             if (role === 'miner') return [WORK, WORK, MOVE]; // 250
             if (role === 'hauler') return [CARRY, CARRY, MOVE]; // 150
+            if (role === 'healer') return [HEAL, MOVE]; // 300 — must include HEAL
             // worker (harvester/builder/upgrader)
             return [WORK, CARRY, MOVE]; // 200
         }
@@ -59,9 +60,14 @@ module.exports.loop = function () {
             const avail = room.energyAvailable || 0;
             const cost = bodyCost(templ);
             if (cost <= avail) return templ;
-            // If the template is too expensive right now, fall back to a minimal kit for the role
+            // If healer, require at least [HEAL,MOVE]; otherwise, skip until affordable
+            if (role === 'healer') {
+                const minHeal = minimalBody('healer'); // [HEAL, MOVE]
+                return bodyCost(minHeal) <= avail ? minHeal : null;
+            }
+            // For other roles, fall back to a minimal kit for the role; spawn will wait until affordable
             const cheap = minimalBody(role);
-            return bodyCost(cheap) <= avail ? cheap : cheap; // return cheap regardless; spawn will wait until afford
+            return bodyCost(cheap) <= avail ? cheap : cheap;
         }
 
         // Economy guardrails
@@ -105,6 +111,7 @@ module.exports.loop = function () {
             if (creepsWithRole.length < targetCount) {
                 // Body selection: prefer something we can afford now to keep momentum
                 const body = affordableBody(role, spawn.room);
+                if (!body) continue; // e.g., healer without HEAL affordable → skip for now
                 // Get a unique, catalog-based name candidate; commit only on success
                 const cand = Names.candidate(role);
                 const newName = cand.name;
@@ -186,13 +193,42 @@ module.exports.loop = function () {
                 Log.onChange(
                     'spawn.roleMix.' + spawn.room.name,
                     { desired: desiredCounts, actual: actual },
-                    (v) =>
-                        'Role mix ' +
-                        spawn.room.name +
-                        ' desired=' +
-                        JSON.stringify(v.desired) +
-                        ' actual=' +
-                        JSON.stringify(v.actual),
+                    function (v) {
+                        function emoji(role) {
+                            if (role === 'harvester') return '🌾';
+                            if (role === 'hauler') return '📦';
+                            if (role === 'builder') return '🏗️';
+                            if (role === 'upgrader') return '🔨';
+                            if (role === 'miner') return '⛏️';
+                            if (role === 'healer') return '❤️';
+                            if (role === 'repairer') return '🔨';
+                            return '❓';
+                        }
+                        function lines(obj) {
+                            var keys = Object.keys(obj || {});
+                            if (!keys.length) return ['  none'];
+                            keys.sort();
+                            var out = [];
+                            for (var i = 0; i < keys.length; i++) {
+                                var k = keys[i];
+                                out.push('  ' + emoji(k) + ' ' + k + ' × ' + obj[k]);
+                            }
+                            return out;
+                        }
+                        var desiredLines = lines(v.desired);
+                        var actualLines = lines(v.actual);
+                        return (
+                            '\n' +
+                            '🧩 Role mix ' +
+                            spawn.room.name +
+                            '\n' +
+                            'Desired:\n' +
+                            desiredLines.join('\n') +
+                            '\n' +
+                            'Actual:\n' +
+                            actualLines.join('\n')
+                        );
+                    },
                     spawn.room.name,
                     'info'
                 );
