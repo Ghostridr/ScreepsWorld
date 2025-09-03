@@ -2,6 +2,18 @@
 
 ## Commits
 
+### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
+
+- 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-02 23:46:03
+- 📦 *Changed src/ JS files:*
+  - src/main.js
+  - src/manager.spawner.js
+  - src/role.builder.js
+  - src/role.harvester.js
+  - src/role.upgrader.js
+
 ### 🟢 Refactor role checks to use strict equality, enhance error logging in manager.spawner, and improve test coverage for main and manager.spawner modules
 
 - 🟢 *Commit:* [9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b](https://github.com/Ghostridr/ScreepsWorld/commit/9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b)
