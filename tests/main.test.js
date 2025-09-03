@@ -9,10 +9,12 @@
 const harvesterMock = { run: jest.fn() };
 const upgraderMock = { run: jest.fn() };
 const builderMock = { run: jest.fn() };
+const haulerMock = { run: jest.fn() };
 
 jest.mock('role.harvester', () => harvesterMock, { virtual: true });
 jest.mock('role.upgrader', () => upgraderMock, { virtual: true });
 jest.mock('role.builder', () => builderMock, { virtual: true });
+jest.mock('role.hauler', () => haulerMock, { virtual: true });
 
 // Provide minimal Screeps globals used by main.js
 global.FIND_STRUCTURES = 'FIND_STRUCTURES';
@@ -49,6 +51,7 @@ describe('main.loop', () => {
                 H1: { name: 'H1', memory: { role: 'harvester' } },
                 U1: { name: 'U1', memory: { role: 'upgrader' } },
                 B1: { name: 'B1', memory: { role: 'builder' } },
+                L1: { name: 'L1', memory: { role: 'hauler' } },
             },
         };
     });
@@ -66,12 +69,15 @@ describe('main.loop', () => {
         const hCalls = harvesterMock.run.mock.calls.length;
         const uCalls = upgraderMock.run.mock.calls.length;
         const bCalls = builderMock.run.mock.calls.length;
+        const lCalls = haulerMock.run.mock.calls.length;
         console.info(`[main.test] role.harvester.run calls: ${hCalls} (expected 1)`);
         console.info(`[main.test] role.upgrader.run calls:  ${uCalls} (expected 1)`);
         console.info(`[main.test] role.builder.run calls:   ${bCalls} (expected 1)`);
+        console.info(`[main.test] role.hauler.run calls:    ${lCalls} (expected 1)`);
         expect(harvesterMock.run).toHaveBeenCalledTimes(1);
         expect(upgraderMock.run).toHaveBeenCalledTimes(1);
         expect(builderMock.run).toHaveBeenCalledTimes(1);
+        expect(haulerMock.run).toHaveBeenCalledTimes(1);
 
         // Tower logic
         const tower = global.Game.getObjectById.mock.results[0].value;

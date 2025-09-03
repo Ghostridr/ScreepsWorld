@@ -5,10 +5,10 @@
     "main": "src/main.js",
     "scripts": {
         "test": "jest",
-        "lint": "eslint \"src/**/*.js\" \"screeps_newbieland_net___21025/**/*.js\" \"tests/**/*.js\" \"tools/**/*.js\" --config configs/eslint.config.mjs --ignore-pattern configs/** --no-warn-ignored",
+        "lint": "eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern",
         "strictify:eq": "node ./tools/strictify-equality.js",
-        "lint:fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"src/**/*.js\" \"screeps_newbieland_net___21025/**/*.js\" \"tests/**/*.js\" \"tools/**/*.js\" --config configs/eslint.config.mjs --ignore-pattern configs/** --no-warn-ignored --fix",
-        "fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"src/**/*.js\" \"screeps_newbieland_net___21025/**/*.js\" \"tests/**/*.js\" \"tools/**/*.js\" --config configs/eslint.config.mjs --ignore-pattern configs/** --no-warn-ignored --fix && npm run format",
+        "lint:fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern --fix",
+        "fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern --fix && npm run format",
         "format": "prettier --config ./configs/prettier.config.cjs --write . --ignore-path .prettierignore",
         "format:check": "prettier --config ./configs/prettier.config.cjs --check . --ignore-path .prettierignore",
         "prepare": "husky install"
