@@ -2,6 +2,36 @@
 
 ## Commits
 
+### 🟢 Refactor tower management and enhance builder, harvester, hauler, and miner roles with threat detection
+
+- 🟢 *Commit:* [88dbd14e008bdba1eb482968cad040146d41068e](https://github.com/Ghostridr/ScreepsWorld/commit/88dbd14e008bdba1eb482968cad040146d41068e)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-03 03:29:58
+- 📦 *Changed root JS files:*
+  - screeps.com/default/catalog.guidance.js
+  - screeps.com/default/catalog.names.js
+  - screeps.com/default/config.constants.js
+  - screeps.com/default/config.paths.js
+  - screeps.com/default/main.js
+  - screeps.com/default/manager.road.js
+  - screeps.com/default/manager.spawner.js
+  - screeps.com/default/manager.tower.js
+  - screeps.com/default/role.builder.js
+  - screeps.com/default/role.harvester.js
+  - screeps.com/default/role.hauler.js
+  - screeps.com/default/role.healer.js
+  - screeps.com/default/role.miner.js
+  - screeps.com/default/role.repairer.js
+  - screeps.com/default/role.upgrader.js
+  - screeps.com/default/service.build.js
+  - screeps.com/default/service.construction.js
+  - screeps.com/default/service.heal.js
+  - screeps.com/default/service.repair.js
+  - screeps.com/default/service.say.js
+  - screeps.com/default/service.sources.js
+  - screeps.com/default/util.heartbeat.js
+  - screeps.com/default/util.logger.js
+
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
 
 - 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
