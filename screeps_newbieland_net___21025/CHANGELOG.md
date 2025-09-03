@@ -1,4 +1,5 @@
 # Changelog
+
 ## Commits
 
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
@@ -59,4 +60,3 @@
 ## Issues (closed)
 
 ## Pull Requests (approved)
-
