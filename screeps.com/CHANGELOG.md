@@ -2,6 +2,41 @@
 
 ## Commits
 
+### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
+
+- 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-02 23:46:02
+- 📦 *Changed root JS files:*
+  - screeps.com/default/catalog.guidance.js
+  - screeps.com/default/catalog.names.js
+  - screeps.com/default/config.colors.js
+  - screeps.com/default/config.constants.js
+  - screeps.com/default/config.paths.js
+  - screeps.com/default/helper.guidance.js
+  - screeps.com/default/main.js
+  - screeps.com/default/manager.container.js
+  - screeps.com/default/manager.extension.js
+  - screeps.com/default/manager.road.js
+  - screeps.com/default/manager.spawner.js
+  - screeps.com/default/manager.tower.js
+  - screeps.com/default/manager.wall.js
+  - screeps.com/default/role.builder.js
+  - screeps.com/default/role.harvester.js
+  - screeps.com/default/role.hauler.js
+  - screeps.com/default/role.miner.js
+  - screeps.com/default/role.upgrader.js
+  - screeps.com/default/service.build.js
+  - screeps.com/default/service.construction.js
+  - screeps.com/default/service.haul.js
+  - screeps.com/default/service.repair.js
+  - screeps.com/default/service.say.js
+  - screeps.com/default/service.sources.js
+  - screeps.com/default/util.caching.js
+  - screeps.com/default/util.heartbeat.js
+  - screeps.com/default/util.logger.js
+  - screeps.com/default/util.mapper.js
+
 ### 🟢 Refactor role checks to use strict equality, enhance error logging in manager.spawner, and improve test coverage for main and manager.spawner modules
 
 - 🟢 *Commit:* [9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b](https://github.com/Ghostridr/ScreepsWorld/commit/9d6dfe9d7c01bc7623a9c9457bbdcdec38b6a17b)
