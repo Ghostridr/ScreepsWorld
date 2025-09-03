@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 fix: correct radius calculation for extension placement rings
+
+- 🟢 *Commit:* [64db9c87e7003d94d91e30e0cd5df15a079b7bdf](https://github.com/Ghostridr/ScreepsWorld/commit/64db9c87e7003d94d91e30e0cd5df15a079b7bdf)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-03 06:45:39
+- 📦 *Changed root JS files:*
+  - screeps.com/default/manager.extension.js
+
 ### 🟢 feat: Implement threat detection and retreat behavior for creeps
 
 - 🟢 *Commit:* [c31723e19c06bb2418530b427569c0bd9052a2e4](https://github.com/Ghostridr/ScreepsWorld/commit/c31723e19c06bb2418530b427569c0bd9052a2e4)
