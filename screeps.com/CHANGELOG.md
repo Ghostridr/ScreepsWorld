@@ -2,6 +2,20 @@
 
 ## Commits
 
+### 🟢 feat: Implement threat detection and retreat behavior for creeps
+
+- 🟢 *Commit:* [c31723e19c06bb2418530b427569c0bd9052a2e4](https://github.com/Ghostridr/ScreepsWorld/commit/c31723e19c06bb2418530b427569c0bd9052a2e4)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-03 06:16:32
+- 📦 *Changed root JS files:*
+  - screeps.com/default/main.js
+  - screeps.com/default/manager.extension.js
+  - screeps.com/default/manager.road.js
+  - screeps.com/default/manager.wall.js
+  - screeps.com/default/role.harvester.js
+  - screeps.com/default/service.auto.detect.js
+  - screeps.com/default/service.say.js
+
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
 
 - 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
