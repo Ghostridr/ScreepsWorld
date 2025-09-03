@@ -2,6 +2,36 @@
 
 ## Commits
 
+### 🟢 Refactor tower management and enhance builder, harvester, hauler, and miner roles with threat detection
+
+- 🟢 *Commit:* [88dbd14e008bdba1eb482968cad040146d41068e](https://github.com/Ghostridr/ScreepsWorld/commit/88dbd14e008bdba1eb482968cad040146d41068e)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-03 03:29:56
+- 📦 *Changed newbieland JS files:*
+  - screeps_newbieland_net___21025/default/catalog.guidance.js
+  - screeps_newbieland_net___21025/default/catalog.names.js
+  - screeps_newbieland_net___21025/default/config.constants.js
+  - screeps_newbieland_net___21025/default/config.paths.js
+  - screeps_newbieland_net___21025/default/main.js
+  - screeps_newbieland_net___21025/default/manager.road.js
+  - screeps_newbieland_net___21025/default/manager.spawner.js
+  - screeps_newbieland_net___21025/default/manager.tower.js
+  - screeps_newbieland_net___21025/default/role.builder.js
+  - screeps_newbieland_net___21025/default/role.harvester.js
+  - screeps_newbieland_net___21025/default/role.hauler.js
+  - screeps_newbieland_net___21025/default/role.healer.js
+  - screeps_newbieland_net___21025/default/role.miner.js
+  - screeps_newbieland_net___21025/default/role.repairer.js
+  - screeps_newbieland_net___21025/default/role.upgrader.js
+  - screeps_newbieland_net___21025/default/service.build.js
+  - screeps_newbieland_net___21025/default/service.construction.js
+  - screeps_newbieland_net___21025/default/service.heal.js
+  - screeps_newbieland_net___21025/default/service.repair.js
+  - screeps_newbieland_net___21025/default/service.say.js
+  - screeps_newbieland_net___21025/default/service.sources.js
+  - screeps_newbieland_net___21025/default/util.heartbeat.js
+  - screeps_newbieland_net___21025/default/util.logger.js
+
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
 
 - 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
