@@ -95,6 +95,19 @@ module.exports = {
         tips: ['Prefer withdrawing from containers.', 'Add roads between sources and controller.'],
     },
 
+    // Healer
+    HEALER_HEAL: {
+        summary: 'Healer {{creep}} healing {{target}}',
+        tips: [
+            'Keep healers behind melee and near ranged units.',
+            'Pair with guards or towers for safer rescues.',
+        ],
+    },
+    HEALER_IDLE: {
+        summary: 'No injured creeps in {{room}}',
+        tips: ['Reduce healer count or reassign temporarily to other roles.'],
+    },
+
     // Main/towers
     TOWER_ID: {
         summary: 'No tower found for hardcoded ID',

@@ -3,12 +3,33 @@
 const Logger = require('util.logger');
 
 // Format role counts as: "harvester×3 | hauler×2 | builder×1"
-function formatRoleCounts(counts) {
+function roleEmoji(role) {
+    switch (role) {
+        case 'harvester':
+            return '🌾';
+        case 'hauler':
+            return '📦';
+        case 'builder':
+            return '🏗️';
+        case 'upgrader':
+            return '🔨';
+        case 'miner':
+            return '⛏️';
+        case 'healer':
+            return '❤️';
+        case 'repairer':
+            return '🔨';
+        default:
+            return '❓';
+    }
+}
+
+function formatRoleLines(counts) {
     const entries = Object.keys(counts)
         .map((k) => [k, counts[k]])
         .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-    if (!entries.length) return 'none';
-    return entries.map(([role, n]) => `${role}×${n}`).join(' | ');
+    if (!entries.length) return ['  none'];
+    return entries.map(([role, n]) => '  ' + roleEmoji(role) + ' ' + role + ' × ' + n);
 }
 
 // Format seconds into y/w/d/h/m/s (omit zero units, keep at least seconds)
@@ -41,9 +62,9 @@ function formatDuration(seconds) {
 
 module.exports = {
     run() {
-        // Pretty heartbeat every 50 ticks
+        // Pretty heartbeat every 100 ticks
         Logger.every(
-            50,
+            100,
             () => {
                 const counts = _.countBy(
                     Object.values(Game.creeps),
@@ -59,9 +80,26 @@ module.exports = {
                 var spt = (Memory && Memory.settings && Memory.settings.uptimeSecondsPerTick) || 3;
                 if (typeof spt !== 'number' || spt <= 0) spt = 3;
                 const uptimeHuman = formatDuration(uptimeTicks * spt);
-                return `Room=${room} uptime=${uptimeHuman} (since T=${joinTick}) total=${total} mix: ${formatRoleCounts(counts)}`;
+                const roleLines = formatRoleLines(counts);
+                return (
+                    `\n` +
+                    '🏠 Room: ' +
+                    room +
+                    '\n' +
+                    '⏱ Uptime: ' +
+                    uptimeHuman +
+                    '\n' +
+                    '📅 Since: ' +
+                    joinTick +
+                    '\n' +
+                    '👥 Total: ' +
+                    total +
+                    '\n' +
+                    '🧩 Mix:\n' +
+                    roleLines.join('\n')
+                );
             },
-            'heartbeat'
+            '❤️ Heartbeat'
         );
 
         // Snapshot on change (dedup noisy logs)
@@ -70,9 +108,16 @@ module.exports = {
         Logger.onChange(
             'heartbeat.roles.' + roomKey,
             counts,
-            (v) =>
-                `roles changed → ${formatRoleCounts(v)} (total=${Object.values(v).reduce((a, b) => a + b, 0)})`,
-            'heartbeat',
+            function (v) {
+                const totalNow = Object.values(v).reduce(function (a, b) {
+                    return a + b;
+                }, 0);
+                const lines = formatRoleLines(v);
+                return (
+                    `\n` + '🧩 Roles changed:\n' + lines.join('\n') + '\n' + '👥 Total: ' + totalNow
+                );
+            },
+            '❤️ Heartbeat',
             'info'
         );
     },

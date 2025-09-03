@@ -5,6 +5,7 @@ const Paths = require('config.paths');
 const Sources = require('service.sources');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
+const Threat = require('service.auto.detect');
 
 var roleUpgrader = {
     /** @param {Creep} creep **/
@@ -33,7 +34,21 @@ var roleUpgrader = {
                 ),
                 'debug'
             );
-            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+            // Speak hammer with controller progress percent (changes only when pct changes)
+            var ctrl = creep.room && creep.room.controller;
+            if (ctrl && typeof ctrl.progressTotal === 'number' && ctrl.progressTotal > 0) {
+                var pct = Math.max(
+                    0,
+                    Math.min(100, Math.round((ctrl.progress * 100) / ctrl.progressTotal))
+                );
+                Say.changed(creep, 'UPG', { pct: pct });
+            } else {
+                // At RCL8 or missing totals, just show hammer
+                Say.changed(creep, 'UPG');
+            }
+            if (Threat.isDanger(creep.room.controller.pos, creep.room.name)) {
+                Say.changed(creep, 'BLOCKED');
+            } else if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller, {
                     visualizePathStyle: Paths.roles.upgrader.upgrade,
                 });
@@ -55,7 +70,9 @@ var roleUpgrader = {
             );
             const sid = Sources.closestSourceId(creep);
             const src = sid ? Game.getObjectById(sid) : null;
-            if (src && creep.harvest(src) === ERR_NOT_IN_RANGE) {
+            if (src && Threat.isDanger(src.pos, creep.room.name)) {
+                Say.changed(creep, 'BLOCKED');
+            } else if (src && creep.harvest(src) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(src, {
                     visualizePathStyle: Paths.roles.upgrader.harvest,
                 });

@@ -25,10 +25,10 @@ module.exports = {
         return c;
     },
 
-    // Claim a site: if >=80% then exclusive; else shared ok (no claim stored)
+    // Claim a site: if >=95% then exclusive; else shared ok (no claim stored)
     claim(roomName, creepName, site) {
         const pct = progressPct(site);
-        if (pct < 80) {
+        if (pct < 95) {
             // shared work, do not claim
             return { exclusive: false };
         }

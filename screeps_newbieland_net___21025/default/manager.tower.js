@@ -1,5 +1,4 @@
 /* eslint-env screeps */
-/* global FIND_MY_CREEPS */
 // manager.tower.js — Single owner of tower actions per tick.
 const Log = require('util.logger').withTag('tower');
 const Repair = require('service.repair');

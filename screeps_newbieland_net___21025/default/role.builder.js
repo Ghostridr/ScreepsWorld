@@ -7,6 +7,7 @@ const Build = require('service.build');
 const Paths = require('config.paths');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
+const Threat = require('service.auto.detect');
 var roleBuilder = {
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -39,6 +40,13 @@ var roleBuilder = {
                 target = Con.pick(creep.room, skip);
             }
             if (target) {
+                if (Threat.isDanger(target.pos, creep.room.name)) {
+                    Build.release(creep.room.name, creep.name, true);
+                    const safeSites = creep.room.find(FIND_CONSTRUCTION_SITES, {
+                        filter: (s) => !Threat.isDanger(s.pos, creep.room.name),
+                    });
+                    target = safeSites.length ? creep.pos.findClosestByPath(safeSites) : null;
+                }
                 // Say build with percent progress when available
                 var pct = null;
                 if (
@@ -64,7 +72,7 @@ var roleBuilder = {
                     ),
                     'debug'
                 );
-                // Attempt claim for >=80% sites (exclusive). If owned by other, bail and retry next tick.
+                // Attempt claim for >=95% sites (exclusive). If owned by other, bail and retry next tick.
                 const claimRes = Build.claim(creep.room.name, creep.name, target);
                 if (claimRes === null) {
                     // owned by another; do not thrash this tick; try again next tick
@@ -117,7 +125,7 @@ var roleBuilder = {
             );
             const sid = Sources.closestSourceId(creep);
             const src = sid ? Game.getObjectById(sid) : null;
-            if (src) {
+            if (src && !Threat.isDanger(src.pos, creep.room.name)) {
                 // Announce harvest intent; move if not in range
                 if (creep.harvest(src) === ERR_NOT_IN_RANGE) {
                     Say.changed(creep, 'MOVE');
@@ -126,6 +134,24 @@ var roleBuilder = {
                     });
                 } else {
                     Say.changed(creep, 'HARVEST');
+                }
+            } else {
+                const containers = creep.room.find(FIND_STRUCTURES, {
+                    filter: (s) =>
+                        s.structureType === STRUCTURE_CONTAINER &&
+                        s.store[RESOURCE_ENERGY] > 0 &&
+                        !Threat.isDanger(s.pos, creep.room.name),
+                });
+                if (containers.length) {
+                    const c = creep.pos.findClosestByPath(containers);
+                    if (creep.withdraw(c, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                        Say.changed(creep, 'MOVE');
+                        creep.moveTo(c, { visualizePathStyle: Paths.roles.builder.harvest });
+                    } else {
+                        Say.changed(creep, 'WITHDRAW');
+                    }
+                } else {
+                    Say.every(creep, 'IDLE', 80);
                 }
             }
         }

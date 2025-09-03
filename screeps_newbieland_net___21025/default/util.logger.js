@@ -1,5 +1,5 @@
 /* eslint-env screeps */
-// Structured logger for Screeps (CommonJS). Wraps console.* with tags and tick timestamps.
+// Structured logger for Screeps (CommonJS). Wraps console.* with tags (no tick timestamp).
 // Usage: const Log = require('util.logger'); Log.info('hello'); Log.warn('issue'); Log.error('bad');
 // Extras: Log.withTag('spawner').info('queued'); Log.every(20, () => 'heartbeat'); Log.once('key','msg')
 
@@ -12,11 +12,56 @@ try {
     COLORS = null;
 }
 
-function ts() {
-    return 'T=' + Game.time;
+// Friendly tag aliases for console readability (emoji-only)
+var TAG_ALIASES = {
+    cleanup: '🗑️',
+    spawn: '🍼',
+    spawner: '🍼',
+    builder: '🏗️',
+    harvester: '🌾',
+    hauler: '📦',
+    upgrader: '🔨',
+    miner: '⛏️',
+    healer: '❤️',
+    heal: '❤️',
+    tower: '🗼',
+    roads: '🛣️',
+    walls: '🧱',
+    containers: '🗃️',
+    container: '🗃️',
+    ext: '🔌',
+    extension: '🔌',
+    extensions: '🔌',
+    source: '🔋',
+    sources: '🔋',
+    controller: '🎮',
+    storage: '📦',
+    terminal: '📨',
+    market: '🏪',
+    repair: '🔨',
+    build: '🧱',
+    haul: '🚚',
+    queue: '📋',
+    path: '🧭',
+    pathing: '🧭',
+    links: '🔗',
+    stats: '📊',
+    dashboard: '📊',
+    heartbeat: '❤️',
+    memory: '🧠',
+    debug: '🐞',
+    warn: '⚠️',
+    warning: '⚠️',
+    error: '❌',
+};
+function displayTag(tag) {
+    if (!tag) return '';
+    var key = String(tag).toLowerCase();
+    return TAG_ALIASES[key] || tag;
 }
 function fmt(tag, msg, level) {
-    const prefix = tag ? '[' + ts() + '][' + tag + '] ' : '[' + ts() + '] ';
+    const t = displayTag(tag);
+    const prefix = t ? '[' + t + '] ' : '';
     const marker =
         (COLORS && COLORS.logging && COLORS.logging.prefix && COLORS.logging.prefix[level]) || '';
     return (marker ? marker + ' ' : '') + prefix + msg;
@@ -84,7 +129,7 @@ Log.trace = function (msg, tag) {
 
 // Grouping
 Log.group = function (label) {
-    if (console.group) console.group('[' + ts() + '] ' + (label || 'group'));
+    if (console.group) console.group(label || 'group');
 };
 Log.groupEnd = function () {
     if (console.groupEnd) console.groupEnd();

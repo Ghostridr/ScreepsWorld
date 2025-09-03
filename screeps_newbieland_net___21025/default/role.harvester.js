@@ -4,6 +4,7 @@ const G = require('helper.guidance');
 const Say = require('service.say');
 const Paths = require('config.paths');
 const Sources = require('service.sources');
+const Threat = require('service.auto.detect');
 var roleHarvester = {
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -11,7 +12,9 @@ var roleHarvester = {
             // Prefer withdrawing from nearby containers at sources to reduce drop loss
             const cont = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (s) =>
-                    s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0,
+                    s.structureType === STRUCTURE_CONTAINER &&
+                    s.store[RESOURCE_ENERGY] > 0 &&
+                    !Threat.isDanger(s.pos, creep.room.name),
             });
 
             // Withdraw from containers if possible, else harvest from a distributed source
@@ -50,7 +53,9 @@ var roleHarvester = {
                     ),
                     'debug'
                 );
-                if (src && creep.harvest(src) === ERR_NOT_IN_RANGE) {
+                if (src && Threat.isDanger(src.pos, creep.room.name)) {
+                    Say.changed(creep, 'BLOCKED');
+                } else if (src && creep.harvest(src) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(src, { visualizePathStyle: Paths.roles.harvester.harvest });
                 }
             }
@@ -62,7 +67,8 @@ var roleHarvester = {
                         (structure.structureType === STRUCTURE_EXTENSION ||
                             structure.structureType === STRUCTURE_SPAWN ||
                             structure.structureType === STRUCTURE_TOWER) &&
-                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+                        structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
+                        !Threat.isDanger(structure.pos, creep.room.name)
                     );
                 },
             });

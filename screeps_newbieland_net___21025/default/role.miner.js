@@ -8,6 +8,7 @@ const Paths = require('config.paths');
 const Sources = require('service.sources');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
+const Threat = require('service.auto.detect');
 
 module.exports = {
     run(creep) {
@@ -29,8 +30,20 @@ module.exports = {
         }
         if (!src) return; // no source yet
 
-        // If container isn't built yet: operate in "bare" mode (harvest and haul to spawn/extensions)
+        // If no assigned/sensed container: try to claim the nearest safe seat; else operate bare.
         if (!box) {
+            // First, try to claim nearest safe free container seat (skip threatened locations)
+            const seat = Sources.findAndClaimNearestFreeSeatSafe(
+                creep.room.name,
+                creep.name,
+                creep.pos
+            );
+            if (seat && seat.containerId) {
+                creep.memory.srcId = seat.sourceId;
+                creep.memory.containerId = seat.containerId;
+                src = Game.getObjectById(seat.sourceId) || src;
+                box = Game.getObjectById(seat.containerId);
+            }
             // If a container has appeared next to the source, adopt it seamlessly
             const near = src.pos.findInRange(FIND_STRUCTURES, 1, {
                 filter: (s) => s.structureType === STRUCTURE_CONTAINER,
@@ -53,6 +66,10 @@ module.exports = {
             if (!box) {
                 if (creep.store.getFreeCapacity() > 0) {
                     // Move within harvest range and mine
+                    if (Threat.isDanger(src.pos, creep.room.name)) {
+                        Say.changed(creep, 'BLOCKED');
+                        return;
+                    }
                     if (creep.pos.getRangeTo(src) > 1) {
                         Say.changed(creep, 'MOVE');
                         creep.moveTo(src, {
