@@ -19,6 +19,7 @@ module.exports.loop = function () {
         }).length;
         let need = Math.max(0, allowed - built - sites);
         if (!need) continue;
+
         const G = require('helper.guidance');
         Log.onChange(
             `ext.plan.${room.name}`,
@@ -34,32 +35,43 @@ module.exports.loop = function () {
             'info'
         );
 
-        // Compact, path-friendly offsets around spawn (ring first, then diagonals)
-        const deltas = [
-            [0, -1],
-            [1, 0],
-            [0, 1],
-            [-1, 0],
-            [1, -1],
-            [-1, -1],
-            [1, 1],
-            [-1, 1],
-            [2, 0],
-            [0, 2],
-            [-2, 0],
-            [0, -2],
-        ];
+        // Generate DIAMOND (Manhattan) rings with a one-tile walkway between spawn and rings,
+        // and between rings: r = 2, 4, 6, ... where |dx|+|dy| == r. Ordered clockwise starting SOUTH;
+        // even-indexed rings are staggered by 22.5° to reduce alignment artifacts.
+        const terrain = room.getTerrain();
+        for (let ringIdx = 0; need > 0 && ringIdx < 6; ringIdx++) {
+            const r = 2 + ringIdx * 2; // 2,4,6,... ensures a 1-tile walkway around spawn and between rings
+            /** @type {[number, number][]} */
+            const offsets = [];
+            // Manhattan perimeter: |dx| + |dy| == r
+            for (let dx = -r; dx <= r; dx++) {
+                const dy = r - Math.abs(dx);
+                if (dy === 0) {
+                    offsets.push([dx, 0]);
+                } else {
+                    offsets.push([dx, dy], [dx, -dy]);
+                }
+            }
+            // Sort clockwise starting SOUTH (below spawn). Stagger alternating rings by 22.5°.
+            const angleOffset = ringIdx % 2 === 1 ? Math.PI / 8 : 0; // 22.5°
+            offsets.sort((a, b) => {
+                const angA = (Math.atan2(a[0], a[1]) - angleOffset + Math.PI * 2) % (Math.PI * 2);
+                const angB = (Math.atan2(b[0], b[1]) - angleOffset + Math.PI * 2) % (Math.PI * 2);
+                return angA - angB;
+            });
 
-        for (const [dx, dy] of deltas) {
-            if (!need) break;
-            const x = spawn.pos.x + dx;
-            const y = spawn.pos.y + dy;
-            if (x < 1 || y < 1 || x > 48 || y > 48) continue;
-            if (room.lookForAt(LOOK_STRUCTURES, x, y).length) continue;
-            if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
-            if (room.createConstructionSite(x, y, STRUCTURE_EXTENSION) === OK) {
-                need--;
-                Log.debug(`site at ${x},${y}`);
+            for (const [dx, dy] of offsets) {
+                if (!need) break;
+                const x = spawn.pos.x + dx;
+                const y = spawn.pos.y + dy;
+                if (x < 1 || y < 1 || x > 48 || y > 48) continue;
+                if (terrain.get(x, y) & TERRAIN_MASK_WALL) continue;
+                if (room.lookForAt(LOOK_STRUCTURES, x, y).length) continue;
+                if (room.lookForAt(LOOK_CONSTRUCTION_SITES, x, y).length) continue;
+                if (room.createConstructionSite(x, y, STRUCTURE_EXTENSION) === OK) {
+                    need--;
+                    Log.debug(`site at ${x},${y}`);
+                }
             }
         }
     }

@@ -279,6 +279,14 @@ Say.funny = function (creep, n) {
     // Only the selected creep speaks this tick
     if (creep.name !== sched.creepName) return;
 
+    // Do not interfere with any other say bubble this tick
+    if (creep && creep.memory && creep.memory._sayTick === Game.time) {
+        // Reschedule and clear selection; skip speaking
+        sched.nextTick = Game.time + randInt(minTicks, maxTicks);
+        sched.creepName = null;
+        return;
+    }
+
     // Pick a message with some entropy
     var seed = 0;
     for (var i = 0; i < creep.name.length; i++) seed = (seed * 31 + creep.name.charCodeAt(i)) >>> 0;
@@ -311,18 +319,55 @@ Say.listFunny = function () {
 };
 
 // Rare long quips (emoji + sentence). Bypasses length limits.
+// Rare long quip — single global scheduler; at most one creep speaks when triggered.
 Say.funnyLong = function (creep, n) {
     const s = cfg();
     if (!s.funnyLong) return;
     if (Game.cpu && Game.cpu.bucket != null && Game.cpu.bucket < s.funLongBucketFloor) return;
     if (n == null) n = s.funLongEvery;
-    if (Game.time % n !== 0) return;
-    // Use a deterministic base per-creep then add time drift
+    // Wider, rarer window: [1×n, 5×n]
+    var minTicks = Math.max(1, Math.floor(n * 1));
+    var maxTicks = Math.max(minTicks + 1, Math.floor(n * 5));
+
+    var sched = s._funnyLongSched;
+    if (!sched || typeof sched !== 'object') {
+        sched = s._funnyLongSched = {
+            nextTick: Game.time + randInt(minTicks, maxTicks),
+            creepName: null,
+        };
+    }
+    if (typeof sched.nextTick !== 'number')
+        sched.nextTick = Game.time + randInt(minTicks, maxTicks);
+    if (Game.time < sched.nextTick) return;
+
+    if (!sched.creepName || !Game.creeps[sched.creepName]) {
+        var names = Object.keys(Game.creeps);
+        if (names.length === 0) {
+            sched.nextTick = Game.time + randInt(minTicks, maxTicks);
+            sched.creepName = null;
+            return;
+        }
+        sched.creepName = names[randInt(0, names.length - 1)];
+    }
+
+    if (creep.name !== sched.creepName) return;
+
+    // Don’t override role/task bubbles this tick
+    if (creep && creep.memory && creep.memory._sayTick === Game.time) {
+        sched.nextTick = Game.time + randInt(minTicks, maxTicks);
+        sched.creepName = null;
+        return;
+    }
+
+    // Deterministic pick with time component
     var seed = 0;
     for (var i = 0; i < creep.name.length; i++) seed = (seed * 33 + creep.name.charCodeAt(i)) >>> 0;
-    const idx = (seed + Math.floor(Game.time / n)) % FUNNIES_LONG.length;
+    const idx = (seed + Math.floor(Game.time / Math.max(1, n))) % FUNNIES_LONG.length;
     const msg = FUNNIES_LONG[idx];
     if (shouldSpeak(creep, msg, { force: true })) doSay(creep, msg);
+
+    sched.nextTick = Game.time + randInt(minTicks, maxTicks);
+    sched.creepName = null;
 };
 
 Say.addFunnyLong = function (s) {

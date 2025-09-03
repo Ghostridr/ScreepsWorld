@@ -32,11 +32,17 @@ module.exports.loop = function () {
         mgrSpawn.loop();
     }
 
-    // Lightweight planners
+    // Lightweight planners — enforce build order: containers → roads → extensions → ramparts
     if (mgrCont && typeof mgrCont.loop === 'function') {
+        // 1) place container sites first near sources
         mgrCont.loop();
     }
+    if (mgrRoad && typeof mgrRoad.loop === 'function') {
+        // 2) then lay roads to those containers/sources
+        mgrRoad.loop();
+    }
     if (mgrExt && typeof mgrExt.loop === 'function') {
+        // 3) then place extension clusters
         mgrExt.loop();
     }
     // Threat scan early
@@ -81,9 +87,8 @@ module.exports.loop = function () {
         Cache.sweep(Memory.pathCache, 50);
     }
 
-    // Managers: tower/road/wall
+    // Managers: tower and ramparts/walls last
     if (mgrTower && typeof mgrTower.loop === 'function') mgrTower.loop();
-    if (mgrRoad && typeof mgrRoad.loop === 'function') mgrRoad.loop();
     if (mgrWall && typeof mgrWall.loop === 'function') mgrWall.loop();
 
     // Run creep roles
