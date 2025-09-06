@@ -134,12 +134,12 @@ module.exports.loop = function () {
     // Auto-scan any manually placed or other unmanaged construction sites, then flush grouped log
     try {
         Log.construction.autoScan();
-    } catch (e) {
+    } catch {
         /* ignore */
     }
     try {
         Log.construction.flush();
-    } catch (e) {
+    } catch {
         /* ignore */
     }
 
