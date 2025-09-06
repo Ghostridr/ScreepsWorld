@@ -1,0 +1,85 @@
+# .github/labels.yml
+
+- name: core
+  color: '1976d2'
+  description: 'Core bot logic and main loop'
+  files:
+      - src/**
+- name: role
+  color: 'ff9800'
+  description: 'Creep role modules'
+  files:
+      - src/role/**
+- name: manager
+  color: '388e3c'
+  description: 'Room-level managers and planners'
+  files:
+      - src/manager/**
+- name: service
+  color: '009688'
+  description: 'Infrastructure services (pathing, links, metrics)'
+  files:
+      - src/service/**
+- name: util
+  color: '607d8b'
+  description: 'Utility and helper functions'
+  files:
+      - src/util/**
+- name: config
+  color: 'fbc02d'
+  description: 'Configuration and constants'
+  files:
+      - src/config/**
+      - configs/**
+- name: task
+  color: 'e91e63'
+  description: 'Task and queue management'
+  files:
+      - src/task/**
+- name: driver
+  color: '7c4dff'
+  description: 'Role dispatcher and registry'
+  files:
+      - src/driver/**
+- name: behavior
+  color: '00bcd4'
+  description: 'Composable behavior slices'
+  files:
+      - src/behavior/**
+- name: tooling
+  color: '455a64'
+  description: 'Deployment and build tools'
+  files:
+      - tools/**
+- name: docs
+  color: '43a047'
+  description: 'Documentation and guides'
+  files:
+      - docs/**
+      - README.md
+- name: test
+  color: 'c62828'
+  description: 'Unit and integration tests'
+  files:
+      - tests/**
+- name: changelog
+  color: 'fbc02d'
+  description: 'Changelog and release notes'
+  files:
+      - CHANGELOG.md
+- name: meta
+  color: '9e9e9e'
+  description: 'Meta, CI, and workflow files'
+  files:
+      - .github/**
+- name: simulation
+  color: '90caf9'
+  description: 'Training and testing code'
+  files:
+      - screeps.com/**
+- name: server
+  color: '8d6e63'
+  description: 'Server-specific code and configs'
+  files:
+      - screeps_newbieland_net___21025/**
+      - screeps_*/**

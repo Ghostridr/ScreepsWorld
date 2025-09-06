@@ -10,9 +10,6 @@ jobs:
     changes:
         name: Detect changes
         runs-on: ubuntu-latest
-        outputs:
-            training: ${{ steps.filter.outputs.training }}
-            code: ${{ steps.filter.outputs.code }}
         steps:
             - uses: actions/checkout@v4
             - id: filter
@@ -23,11 +20,15 @@ jobs:
                         - 'screeps.com/**'
                       code:
                         - 'src/**'
-                        - 'screeps_newbieland_net___21025/**'
                         - 'tests/**'
                         - 'tools/**'
                         - 'configs/**'
                         - '!screeps.com/**'
+                        - '!screeps_*/**'
+                        - '!tutorials/**'
+        outputs:
+            training: steps.filter.outputs.training
+            code: steps.filter.outputs.code
 
     lint_and_test:
         name: Lint and Test
