@@ -7,7 +7,7 @@ import globals from 'globals';
 
 export default [
     // Ignore config files and non-target folders
-    { ignores: ['configs/**', 'screeps.com/**', 'tutorials/**'] },
+    { ignores: ['configs/**', 'screeps.com/**', 'tutorial/**'] },
     js.configs.recommended,
     {
         languageOptions: {
