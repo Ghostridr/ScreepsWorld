@@ -1,11 +1,27 @@
-# screeps
+# Screeps Simulation/Training
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](../LICENSE)
 
-[![Changelog Tracker (training)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml)
-
 `Training/Local sandbox`
-This folder is my local sandbox for the official Screeps MMO server (screeps.com). I use it to iterate on scripts safely in the Simulation » Training mode before uploading to the live world.
+This folder is a deployment target for the official Screeps MMO server (`screeps.com`). Scripts here are auto-synced from the canonical source in `src/` using symlink and copy tools. This ensures the code in `default/` always reflects the latest tested logic from development.
+
+## Deployment & Sync Tools
+
+Source files in `src/` are not manually copied here. Instead, use:
+
+- **Symlink:**
+  - `npm run link:screeps` — Instantly symlinks all modules from `src/` into `default/`, so changes in `src/` are reflected immediately.
+- **Copy & Auto-update:**
+  - `npm run screeps:copy` — Copies all modules from `src/` into `default/` and watches for changes, auto-updating files as you edit.
+- **Clear:**
+  - `npm run screeps:clear` — Removes all files from `default/` for a clean slate.
+
+All server paths and deployment logic are managed in `tools/server_dirs.js`.
+
+**How this affects this folder:**
+
+- Do not edit files in `default/` directly; always edit in `src/` and use the tools above to sync.
+- Any manual changes in `default/` will be overwritten the next time you run a sync tool.
 
 ## Directory structure
 
@@ -18,16 +34,17 @@ This folder is my local sandbox for the official Screeps MMO server (screeps.com
 
 Related repo folders:
 
-- `src/` – A minimal, Node-friendly mirror of the same logic used for unit tests (`npm test`). I develop in `src/` and copy into `screeps.com/default/` when I’m ready to try it in the simulator.
+- `src/` – The canonical source for all modules. Develop and test here; use the deployment tools to sync with `screeps.com/default/`.
 
 ## Notes
 
 - This codebase uses CommonJS (`module.exports` / `require`) as expected by the Screeps runtime.
-- Roles are intentionally small and composable so they’re easy to test in isolation and then verify in Training.
+- Roles are intentionally small and composable for easy testing and verification.
+- All deployment and sync logic is automated; manual copying is discouraged.
 
 ## License
 
 This folder inherits the repository’s license. See [LICENSE](../LICENSE) at the repo root.
 
 ---
-[![Back to top](https://img.shields.io/badge/Back%20to%20top-222?style=plastic&logo=github)](#screeps)
+[![Back to top](https://img.shields.io/badge/Back%20to%20top-222?style=plastic&logo=github)](#screeps-simulationtraining)

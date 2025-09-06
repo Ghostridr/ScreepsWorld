@@ -1,5 +1,5 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+# #!/bin/sh
+# . "$(dirname "$0")/_/husky.sh"
 
 # Smart equality codemod (non-interactive)
 npm run strictify:eq -- --no-prompt
