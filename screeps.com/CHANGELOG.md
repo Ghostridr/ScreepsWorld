@@ -41,27 +41,35 @@
   - screeps.com/default/util.logger.js
   - screeps.com/default/util.mapper.js
 
-### 🟢 fix: correct radius calculation for extension placement rings
+### 🟢 Refactor tower management and enhance builder, harvester, hauler, and miner roles with threat detection
 
-- 🟢 *Commit:* [64db9c87e7003d94d91e30e0cd5df15a079b7bdf](https://github.com/Ghostridr/ScreepsWorld/commit/64db9c87e7003d94d91e30e0cd5df15a079b7bdf)
+- 🟢 *Commit:* [88dbd14e008bdba1eb482968cad040146d41068e](https://github.com/Ghostridr/ScreepsWorld/commit/88dbd14e008bdba1eb482968cad040146d41068e)
 - 👤 *Author:* Ghostridr
-- 📅 *Date:* 2025-09-03 06:45:39
+- 📅 *Date:* 2025-09-03 03:29:58
 - 📦 *Changed root JS files:*
-  - screeps.com/default/manager.extension.js
-
-### 🟢 feat: Implement threat detection and retreat behavior for creeps
-
-- 🟢 *Commit:* [c31723e19c06bb2418530b427569c0bd9052a2e4](https://github.com/Ghostridr/ScreepsWorld/commit/c31723e19c06bb2418530b427569c0bd9052a2e4)
-- 👤 *Author:* Ghostridr
-- 📅 *Date:* 2025-09-03 06:16:32
-- 📦 *Changed root JS files:*
+  - screeps.com/default/catalog.guidance.js
+  - screeps.com/default/catalog.names.js
+  - screeps.com/default/config.constants.js
+  - screeps.com/default/config.paths.js
   - screeps.com/default/main.js
-  - screeps.com/default/manager.extension.js
   - screeps.com/default/manager.road.js
-  - screeps.com/default/manager.wall.js
+  - screeps.com/default/manager.spawner.js
+  - screeps.com/default/manager.tower.js
+  - screeps.com/default/role.builder.js
   - screeps.com/default/role.harvester.js
-  - screeps.com/default/service.auto.detect.js
+  - screeps.com/default/role.hauler.js
+  - screeps.com/default/role.healer.js
+  - screeps.com/default/role.miner.js
+  - screeps.com/default/role.repairer.js
+  - screeps.com/default/role.upgrader.js
+  - screeps.com/default/service.build.js
+  - screeps.com/default/service.construction.js
+  - screeps.com/default/service.heal.js
+  - screeps.com/default/service.repair.js
   - screeps.com/default/service.say.js
+  - screeps.com/default/service.sources.js
+  - screeps.com/default/util.heartbeat.js
+  - screeps.com/default/util.logger.js
 
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
 
