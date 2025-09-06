@@ -25,6 +25,7 @@ jobs:
                         - 'configs/**'
                         - '!screeps.com/**'
                         - '!screeps_*/**'
+                        - '!Tutorials/'
                         - '!tutorials/'
         outputs:
             training: steps.filter.outputs.training
