@@ -25,11 +25,13 @@ jobs:
                         - 'configs/**'
                         - '!screeps.com/**'
                         - '!screeps_*/**'
-                        - '!Tutorials/'
-                        - '!tutorials/'
+                        - '!tutorials/**'
+                      tutorials:
+                        - 'tutorials/**'
         outputs:
             training: steps.filter.outputs.training
             code: steps.filter.outputs.code
+            tutorials: steps.filter.outputs.tutorials
 
     lint_and_test:
         name: Lint and Test
