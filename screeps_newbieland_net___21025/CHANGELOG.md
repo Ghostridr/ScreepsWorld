@@ -2,6 +2,45 @@
 
 ## Commits
 
+### 🟢 feat: add symlink management for Screeps deployment
+
+- 🟢 *Commit:* [a12e1ea1348ac2bf5f076ee5875dbd8a577dcb4c](https://github.com/Ghostridr/ScreepsWorld/commit/a12e1ea1348ac2bf5f076ee5875dbd8a577dcb4c)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-06 11:01:23
+- 📦 *Changed newbieland JS files:*
+  - screeps_newbieland_net___21025/default/catalog.guidance.js
+  - screeps_newbieland_net___21025/default/catalog.names.js
+  - screeps_newbieland_net___21025/default/config.colors.js
+  - screeps_newbieland_net___21025/default/config.constants.js
+  - screeps_newbieland_net___21025/default/config.paths.js
+  - screeps_newbieland_net___21025/default/helper.guidance.js
+  - screeps_newbieland_net___21025/default/main.js
+  - screeps_newbieland_net___21025/default/manager.container.js
+  - screeps_newbieland_net___21025/default/manager.extension.js
+  - screeps_newbieland_net___21025/default/manager.road.js
+  - screeps_newbieland_net___21025/default/manager.spawner.js
+  - screeps_newbieland_net___21025/default/manager.tower.js
+  - screeps_newbieland_net___21025/default/manager.wall.js
+  - screeps_newbieland_net___21025/default/role.builder.js
+  - screeps_newbieland_net___21025/default/role.harvester.js
+  - screeps_newbieland_net___21025/default/role.hauler.js
+  - screeps_newbieland_net___21025/default/role.healer.js
+  - screeps_newbieland_net___21025/default/role.miner.js
+  - screeps_newbieland_net___21025/default/role.repairer.js
+  - screeps_newbieland_net___21025/default/role.upgrader.js
+  - screeps_newbieland_net___21025/default/service.auto.detect.js
+  - screeps_newbieland_net___21025/default/service.build.js
+  - screeps_newbieland_net___21025/default/service.construction.js
+  - screeps_newbieland_net___21025/default/service.haul.js
+  - screeps_newbieland_net___21025/default/service.heal.js
+  - screeps_newbieland_net___21025/default/service.repair.js
+  - screeps_newbieland_net___21025/default/service.say.js
+  - screeps_newbieland_net___21025/default/service.sources.js
+  - screeps_newbieland_net___21025/default/util.caching.js
+  - screeps_newbieland_net___21025/default/util.heartbeat.js
+  - screeps_newbieland_net___21025/default/util.logger.js
+  - screeps_newbieland_net___21025/default/util.mapper.js
+
 ### 🟢 Refactor tower management and enhance builder, harvester, hauler, and miner roles with threat detection
 
 - 🟢 *Commit:* [88dbd14e008bdba1eb482968cad040146d41068e](https://github.com/Ghostridr/ScreepsWorld/commit/88dbd14e008bdba1eb482968cad040146d41068e)
