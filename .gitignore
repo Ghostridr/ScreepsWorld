@@ -27,6 +27,8 @@ yarn-error.log*
 
 # ScreepsWorld
 .sync
+screeps.com/default/*.js
+screeps_newbieland_net___21025/default/*.js
 
 # Windows
 $RECYCLE.BIN/
