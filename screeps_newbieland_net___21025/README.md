@@ -2,9 +2,25 @@
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](../LICENSE)
 
-[![Changelog Tracker (newbieland)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml/badge.svg?)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml)
+This folder is a deployment target for the community “Newbie Land” Screeps server. Scripts here are auto-synced from the canonical source in `src/` using symlink and copy tools. This ensures the code in `default/` always reflects the latest tested logic from development.
 
-A live testing workspace wired to the community “Newbie Land” Screeps server. I use this folder to push code straight into a running room and verify behavior under real ticks, spawns, and hostiles.
+## Deployment & Sync Tools
+
+Source files in `src/` are not manually copied here. Instead, use:
+
+- **Symlink:**
+  - `npm run link:screeps` — Instantly symlinks all modules from `src/` into `default/`, so changes in `src/` are reflected immediately.
+- **Copy & Auto-update:**
+  - `npm run screeps:copy` — Copies all modules from `src/` into `default/` and watches for changes, auto-updating files as you edit.
+- **Clear:**
+  - `npm run screeps:clear` — Removes all files from `default/` for a clean slate.
+
+All server paths and deployment logic are managed in `tools/server_dirs.js`.
+
+**How this affects this folder:**
+
+- Do not edit files in `default/` directly; always edit in `src/` and use the tools above to sync.
+- Any manual changes in `default/` will be overwritten the next time you run a sync tool.
 
 ## Why Newbie Land
 
@@ -22,12 +38,12 @@ A live testing workspace wired to the community “Newbie Land” Screeps server
 
 Related repo folders:
 
-- `src/` – A minimal, Node-friendly mirror of the same logic used for unit tests (`npm test`). I develop in `src/` and copy into `screeps.com/default/` when I’m ready to try it in the simulator.
+- `src/` – The canonical source for all modules. Develop and test here; use the deployment tools to sync with `screeps_newbieland_net___21025/default/`.
 
 ## Using this with the rest of ScreepsWorld
 
-- `src/` holds reusable logic and jest tests for testing that logic. I'll move features from there into this Newbie Land folder when ready for live ticks after testing.
-- `screeps.com/` contains Simulation/Training scripts for offline testing. This is where I develop and test new features before moving them to Newbie Land or other servers.
+- `src/` holds reusable logic and jest tests for testing that logic. Develop and test features here before syncing to Newbie Land or other servers.
+- `screeps.com/` contains Simulation/Training scripts for offline testing. Use this for initial development and testing before moving features to Newbie Land.
 
 ## License
 

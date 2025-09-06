@@ -2,9 +2,13 @@
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](LICENSE)
 
-[![CI](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml) [![PR Labeler](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml)
+[![CI](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/ci.yml) [![PR Labeler](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/labeler.yml) [![Changelog](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml)
 
-[![Changelog](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog.yml) [![Changelog (training)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_training.yml) [![Changelog (newbieland)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml/badge.svg)](https://github.com/Ghostridr/ScreepsWorld/actions/workflows/changelog_newbieland.yml)
+## Getting Started
+
+If you're new to ScreepsWorld or the Screeps game, it's strongly recommended to begin with the [Getting Started guide](docs/getting-started.md). This document covers setup, project structure, and key workflows to help you onboard quickly and confidently.
+
+[![Getting Started](https://img.shields.io/badge/Getting%20Started-ff9800?style=plastic&logo=readme)](docs/getting-started.md)
 
 `Offline Development` _A learning-first JavaScript repo built by playing the MMO programming game **Screeps**._
 
@@ -109,30 +113,72 @@ Each milestone validates for ~50–100 ticks unless noted. Boxes are targets for
 
 ## Repository Structure
 
-> **CommonJS** modules, organized to keep logic pure and side-effects isolated.
+> This repo uses symlinks to avoid duplication and keep the source organized in `src/`. See [Deployment](#deployment) for details.
 
-```text
+The core bot code lives in `src/` with a modular structure inspired by common design patterns. Each file is documented with its purpose.
+
+```sh
 src/
-  main.js                   # exports.loop — top-level orchestration only
-  configs.js                # configuration values
-  constants.plans.js        # per-RCL build intents
-  driver.game.js            # thin wrappers over Game/Memory (isolate globals)
-  driver.movement.js        # moveTo policy, reusePath, caching adapters
-  driver.roles.js           # role logic adapters
-  index.constants.js        # constants index/exports
-  manager.spawner.js        # auto-spawn creeps for all roles
-  manager.task.js           # central queue, claims
-  manager.tower.js          # heal/repair/attack priorities
-  role.builder.js           # builder role logic
-  role.harvester.js         # harvester role logic
-  role.upgrader.js          # upgrader role logic
-  services.creeps.js        # registry, indexing, counts
-  services.pathing.js       # path cache/stuck detection APIs
-  services.rooms.js         # per-room views, metrics
-  util.logger.js            # log formatting, levels
-  util.memory.js            # schema init, GC, migrations
-  util.profiler.js          # optional CPU sampling helpers
-  tests/                    # test files
+  main.js             # Loop entry point
+  catalog/            # Static data & enums
+    guidance.js       # Guidance messages
+    names.js          # Creep names
+  config/
+    colors.js         # Color constants
+    constants.js      # Game constants
+    debug.js          # Debugging flags
+    paths.js          # Pathfinding constants
+    scaler.js         # Scaling utilities
+  helper/
+    guidance.js       # Guidance helpers
+  manager/
+    container.js      # Container management
+    extension.js      # Extension management
+    road.js           # Road management
+    spawner.js        # Spawner management
+    tower.js          # Tower management
+    wall.js           # Wall management
+  role/
+    builder.js        # Builder role
+    harvester.js      # Harvester role
+    hauler.js         # Hauler role
+    healer.js         # Healer role
+    miner.js          # Miner role
+    repairer.js       # Repairer role
+    upgrader.js       # Upgrader role
+  service/
+    auto.detect.js    # Auto-detect service
+    creeps.js         # Creep registry service
+    flags.js          # Flag management service
+    market.js         # Market service
+    metrics.js        # Metrics collection service
+    power.js          # Power management service
+    rooms.js          # Room management service
+    spawns.js         # Spawn registry service
+    structures.js     # Structure registry service
+    towers.js         # Tower registry service
+  driver/
+    roles.js          # Role dispatcher
+  task/
+    task.js           # Task manager (priority queue)
+  behavior/
+    build.js          # Build behavior
+    construction.js   # Construction behavior
+    haul.js           # Haul behavior
+    heal.js           # Heal behavior
+    pathing.js        # Pathing behavior
+    repair.js         # Repair behavior
+    say.js            # Say behavior
+    sources.js        # Sources behavior
+  tools/
+    clear.js          # Clear symlinks (ignored)
+    link.js           # Create symlinks (ignored)
+  util/
+    caching.js        # Caching utilities
+    memory.js         # Memory utilities
+    heartbeat.js      # Heartbeat utilities
+    logger.js         # Logging utilities
+    mapper.js         # Mapping utilities
 ```
 
 **Minimal loop skeleton (illustrative):**
@@ -149,7 +195,54 @@ exports.loop = function () {
 
 ## Deployment
 
-> This repo assumes an **offline-first** workflow based in `src/`. Any modules within the root will appear in the Screeps client and be readable by the game. Screeps does not support folders or other files outside it's designed modules (`main`, `role.builder`, etc.).
+> This repo assumes an **offline-first** workflow based in `src/`.
+
+Any modules within the root will appear in the Screeps client and be readable by the game. Screeps does not support folders or other files outside it's designed modules (`main`, `role.builder`, etc.) using a flat directory structure. However, this repo uses symlinks to avoid duplication and keep the source organized in `src/`.
+
+**Deployment tools:**
+
+- `tools/server_dirs.js`: Centralizes the list of server directories and exports `ROOT` and `SRC` paths for all deployment scripts.
+- `tools/link.js`: Symlinks every `src/**/*.js` (excluding tools) into each server's `/default` directory using dot-named module filenames. Updates are instant via symlinks.
+- `tools/copy.js`: Copies every `src/**/*.js` (excluding tools) into each server's `/default` directory, overwriting files and auto-updating on source changes (uses a file watcher for live sync).
+- `tools/clear.js`: Deletes all files in the `/default` subdirectory of each server listed in `server_dirs.js`.
+
+**Usage:**
+
+- To update symlinks, run:
+
+  ```sh
+  npm run screeps:link
+  ```
+
+- To copy files and auto-update on changes, run:
+
+  ```sh
+  npm run screeps:copy
+  ```
+
+- To clear all files in `/default` directories, run:
+
+  ```sh
+  npm run screeps:clear
+  ```
+
+- To preview actions (no changes made), use:
+
+  ```sh
+  npm run screeps:link:preview
+  npm run screeps:copy:preview
+  npm run screeps:clear:preview
+  ```
+
+All server paths and root/src locations are managed in `tools/server_dirs.js`.
+
+To clear all symlinks, run:
+
+```sh
+node src/tools/clear.js
+```
+
+> **CommonJS** modules, organized to keep logic pure and side-effects isolated.
 
 **Release checklist:**
 
