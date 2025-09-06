@@ -109,30 +109,86 @@ Each milestone validates for ~50–100 ticks unless noted. Boxes are targets for
 
 ## Repository Structure
 
+**Symlink-based deployment:**
+
+All server directories (e.g., `screeps.com/default/`) use symbolic links to reference the canonical source files in `src/`. This means every `.js` file in `src/` is symlinked into each server's `default/` directory, ensuring that updates to source files are instantly reflected across all server deployments. No files are duplicated — only pointers are created.
+
+To update links, run:
+
+```sh
+npm run link:screeps
+```
+
+To clear all symlinks, run:
+
+```sh
+node src/tools/clear.js
+```
+
 > **CommonJS** modules, organized to keep logic pure and side-effects isolated.
 
-```text
+```sh
 src/
-  main.js                   # exports.loop — top-level orchestration only
-  configs.js                # configuration values
-  constants.plans.js        # per-RCL build intents
-  driver.game.js            # thin wrappers over Game/Memory (isolate globals)
-  driver.movement.js        # moveTo policy, reusePath, caching adapters
-  driver.roles.js           # role logic adapters
-  index.constants.js        # constants index/exports
-  manager.spawner.js        # auto-spawn creeps for all roles
-  manager.task.js           # central queue, claims
-  manager.tower.js          # heal/repair/attack priorities
-  role.builder.js           # builder role logic
-  role.harvester.js         # harvester role logic
-  role.upgrader.js          # upgrader role logic
-  services.creeps.js        # registry, indexing, counts
-  services.pathing.js       # path cache/stuck detection APIs
-  services.rooms.js         # per-room views, metrics
-  util.logger.js            # log formatting, levels
-  util.memory.js            # schema init, GC, migrations
-  util.profiler.js          # optional CPU sampling helpers
-  tests/                    # test files
+  main.js             # Loop entry point
+  catalog/            # Static data & enums
+    guidance.js       # Guidance messages
+    names.js          # Creep names
+  config/
+    colors.js         # Color constants
+    constants.js      # Game constants
+    debug.js          # Debugging flags
+    paths.js          # Pathfinding constants
+    scaler.js         # Scaling utilities
+  helper/
+    guidance.js       # Guidance helpers
+  manager/
+    container.js      # Container management
+    extension.js      # Extension management
+    road.js           # Road management
+    spawner.js        # Spawner management
+    tower.js          # Tower management
+    wall.js           # Wall management
+  role/
+    builder.js        # Builder role
+    harvester.js      # Harvester role
+    hauler.js         # Hauler role
+    healer.js         # Healer role
+    miner.js          # Miner role
+    repairer.js       # Repairer role
+    upgrader.js       # Upgrader role
+  service/
+    auto.detect.js    # Auto-detect service
+    creeps.js         # Creep registry service
+    flags.js          # Flag management service
+    market.js         # Market service
+    metrics.js        # Metrics collection service
+    power.js          # Power management service
+    rooms.js          # Room management service
+    spawns.js         # Spawn registry service
+    structures.js     # Structure registry service
+    towers.js         # Tower registry service
+  driver/
+    roles.js          # Role dispatcher
+  task/
+    task.js           # Task manager (priority queue)
+  behavior/
+    build.js          # Build behavior
+    construction.js   # Construction behavior
+    haul.js           # Haul behavior
+    heal.js           # Heal behavior
+    pathing.js        # Pathing behavior
+    repair.js         # Repair behavior
+    say.js            # Say behavior
+    sources.js        # Sources behavior
+  tools/
+    clear.js          # Clear symlinks (ignored)
+    link.js           # Create symlinks (ignored)
+  util/
+    caching.js       # Caching utilities
+    memory.js        # Memory utilities
+    heartbeat.js     # Heartbeat utilities
+    logger.js        # Logging utilities
+    mapper.js        # Mapping utilities
 ```
 
 **Minimal loop skeleton (illustrative):**
@@ -149,7 +205,9 @@ exports.loop = function () {
 
 ## Deployment
 
-> This repo assumes an **offline-first** workflow based in `src/`. Any modules within the root will appear in the Screeps client and be readable by the game. Screeps does not support folders or other files outside it's designed modules (`main`, `role.builder`, etc.).
+> This repo assumes an **offline-first** workflow based in `src/`.
+
+Any modules within the root will appear in the Screeps client and be readable by the game. Screeps does not support folders or other files outside it's designed modules (`main`, `role.builder`, etc.) using a flat directory structure. However, this repo uses symlinks to avoid duplication and keep the source organized in `src/`.
 
 **Release checklist:**
 
