@@ -22,16 +22,16 @@
     "lint-staged": {
         "*.js": [
             "node ./tools/strictify-equality.js --no-prompt --exclude-training",
-            "eslint --config configs/eslint.config.mjs --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --fix",
+            "eslint --config configs/eslint.config.mjs --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorial/** --fix",
             "prettier --config ./configs/prettier.config.cjs --write --ignore-path .prettierignore"
         ]
     },
     "scripts": {
-        "fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern --fix && npm run format",
+        "fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorial/** --no-warn-ignored --no-error-on-unmatched-pattern --fix && npm run format",
         "format": "prettier --config ./configs/prettier.config.cjs --write . --ignore-path .prettierignore",
         "format:check": "prettier --config ./configs/prettier.config.cjs --check . --ignore-path .prettierignore",
-        "lint": "eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --ignore-pattern Tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern",
-        "lint:fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorials/** --ignore-pattern Tutorials/** --no-warn-ignored --no-error-on-unmatched-pattern --fix",
+        "lint": "eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorial/** --no-warn-ignored --no-error-on-unmatched-pattern",
+        "lint:fix": "npm run strictify:eq -- --no-prompt --exclude-training && eslint \"**/*.js\" --config configs/eslint.config.mjs --ignore-pattern node_modules/** --ignore-pattern configs/** --ignore-pattern screeps.com/** --ignore-pattern tutorial/** --no-warn-ignored --no-error-on-unmatched-pattern --fix",
         "prepare": "husky install",
         "screeps:clear": "node ./tools/clear.js",
         "screeps:clear:preview": "node ./tools/clear.js --preview",
