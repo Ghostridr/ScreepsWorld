@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 chore: update CI configuration to properly handle tutorials directory and add main.js file
+
+- 🟢 *Commit:* [e12cd2c0ac036ecf69653870b87911b37b91c533](https://github.com/Ghostridr/ScreepsWorld/commit/e12cd2c0ac036ecf69653870b87911b37b91c533)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-06 12:18:36
+- 📦 *Changed src/ JS files:*
+  - src/main.js
+
 ### 🟢 feat: add utility modules for caching, heartbeat logging, and mapping
 
 - 🟢 *Commit:* [cd93571580dd4c9b5d719b343225c8bb70d8a6bd](https://github.com/Ghostridr/ScreepsWorld/commit/cd93571580dd4c9b5d719b343225c8bb70d8a6bd)
