@@ -17,7 +17,7 @@ const recast = require('recast');
 
 const projectRoot = path.resolve(__dirname, '..');
 const TRAINING_DIR = path.join(projectRoot, 'screeps.com');
-const TUTORIALS_DIR = path.join(projectRoot, 'tutorials');
+const TUTORIALS_DIR = path.join(projectRoot, 'tutorial');
 
 const rawArgs = process.argv.slice(2);
 const argv = new Set(rawArgs.filter((a) => a.startsWith('--')));
