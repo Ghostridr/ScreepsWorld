@@ -40,6 +40,6 @@
         "screeps:link": "node ./tools/link.js",
         "screeps:link:preview": "node ./tools/link.js --preview",
         "strictify:eq": "node ./tools/strictify-equality.js",
-        "test": "jest"
+        "test": "jest --config ./configs/jest.config.js"
     }
 }
