@@ -2,6 +2,23 @@
 
 ## Commits
 
+### 🟢 refactor: update service imports to behavior modules across various roles and managers
+
+- 🟢 *Commit:* [5027119bf4143f7f9acfcee20fc906d2c3b2b867](https://github.com/Ghostridr/ScreepsWorld/commit/5027119bf4143f7f9acfcee20fc906d2c3b2b867)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-07 05:34:58
+- 📦 *Changed src/ JS files:*
+  - src/config/scaler.js
+  - src/main.js
+  - src/manager/tower.js
+  - src/role/builder.js
+  - src/role/harvester.js
+  - src/role/hauler.js
+  - src/role/healer.js
+  - src/role/miner.js
+  - src/role/repairer.js
+  - src/role/upgrader.js
+
 ### 🟢 fix: correct path for tutorials directory in strictify-equality script
 
 - 🟢 *Commit:* [32758d3a21a41b30238c5b7a7339e1d7d200d0bc](https://github.com/Ghostridr/ScreepsWorld/commit/32758d3a21a41b30238c5b7a7339e1d7d200d0bc)
