@@ -134,13 +134,13 @@ module.exports.loop = function () {
     // Auto-scan any manually placed or other unmanaged construction sites, then flush grouped log
     try {
         Log.construction.autoScan();
-    } catch {
-        /* ignore */
+    } catch (e) {
+        console.log('Logger error in construction autoScan', e && e.stack ? e.stack : e);
     }
     try {
         Log.construction.flush();
-    } catch {
-        /* ignore */
+    } catch (e) {
+        console.log('Logger error flushing construction log', e && e.stack ? e.stack : e);
     }
 
     // Housekeeping: release miner seats for dead creeps
