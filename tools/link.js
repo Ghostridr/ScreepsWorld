@@ -72,8 +72,6 @@ function linkOne(targetDir, srcFile) {
     } catch (e) {
         console.warn('Failed to link', out, e.message);
     }
-    fs.symlinkSync(rel, out);
-    console.log('link:', path.relative(process.cwd(), out), '->', rel);
 }
 
 // Main entry point
