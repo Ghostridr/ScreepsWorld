@@ -2,10 +2,10 @@
 // role.healer.js — Simple battlefield medic: find injured friendlies, move and heal.
 var Log = require('util.logger').withTag('healer');
 var G = require('helper.guidance');
-var Say = require('service.say');
-var Heal = require('service.heal');
+var Say = require('behavior.say');
+var Heal = require('behavior.heal');
 var Paths = require('config.paths');
-var Pathing = require('service.pathing');
+var Pathing = require('behavior.pathing');
 var Mapper = require('util.mapper');
 var Cache = require('util.caching');
 console.log('healer.js Cache loaded:', typeof Cache);

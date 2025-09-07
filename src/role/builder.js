@@ -1,11 +1,11 @@
 const Log = require('util.logger').withTag('builder');
 const G = require('helper.guidance');
-const Say = require('service.say');
-const Con = require('service.construction');
-const Sources = require('service.sources');
-const Build = require('service.build');
+const Say = require('behavior.say');
+const Con = require('behavior.construction');
+const Sources = require('behavior.sources');
+const Build = require('behavior.build');
 const Paths = require('config.paths');
-const Pathing = require('service.pathing');
+const Pathing = require('behavior.pathing');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
 console.log('builder.js Mapper loaded:', typeof Mapper);

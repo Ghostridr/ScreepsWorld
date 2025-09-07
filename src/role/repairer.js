@@ -1,9 +1,9 @@
 /* eslint-env screeps */
 // role.repairer.js — Dedicated structural maintenance using service.repair floors & priority
-var Repair = require('service.repair');
+var Repair = require('behavior.repair');
 var Paths = require('config.paths');
-var Pathing = require('service.pathing');
-var Say = require('service.say');
+var Pathing = require('behavior.pathing');
+var Say = require('behavior.say');
 var Threat = require('service.auto.detect');
 
 module.exports = {

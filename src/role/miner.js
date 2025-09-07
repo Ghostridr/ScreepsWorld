@@ -3,10 +3,10 @@
 // Expects creep.memory.srcId and containerId to be set when spawned or on first run.
 const Log = require('util.logger').withTag('miner');
 const G = require('helper.guidance');
-const Say = require('service.say');
+const Say = require('behavior.say');
 const Paths = require('config.paths');
-const Pathing = require('service.pathing');
-const Sources = require('service.sources');
+const Pathing = require('behavior.pathing');
+const Sources = require('behavior.sources');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
 console.log('miner.js Mapper loaded:', typeof Mapper);

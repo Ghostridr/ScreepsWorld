@@ -144,7 +144,7 @@ module.exports.getDesiredRoleCounts = function (room, env) {
 
         // Repairers via rampart backlog
         try {
-            var Repair = require('service.repair');
+            var Repair = require('behavior.repair');
             var RB = Repair.rampartBacklog(room);
             var pol =
                 (Memory.rooms &&

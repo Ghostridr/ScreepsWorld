@@ -1,8 +1,8 @@
 /* eslint-env screeps */
 // manager.tower.js — Single owner of tower actions per tick.
-const Log = require('util.logger').withTag('tower');
-const Repair = require('service.repair');
 const G = require('helper.guidance');
+const Log = require('util.logger').withTag('tower');
+const Repair = require('behavior.repair');
 
 module.exports.loop = function () {
     const towers = _.filter(Game.structures, (s) => s.structureType === STRUCTURE_TOWER && s.my);

@@ -2,10 +2,10 @@
 // role.hauler.js — move energy from containers/ground to sinks (spawn/extensions/towers/storage)
 const Log = require('util.logger').withTag('hauler');
 const G = require('helper.guidance');
-const Say = require('service.say');
+const Say = require('behavior.say');
 const Paths = require('config.paths');
-const Pathing = require('service.pathing');
-const HaulQ = require('service.haul');
+const Pathing = require('behavior.pathing');
+const HaulQ = require('behavior.haul');
 const Mapper = require('util.mapper');
 const Cache = require('util.caching');
 console.log('hauler.js Mapper loaded:', typeof Mapper);

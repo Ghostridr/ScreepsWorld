@@ -1,10 +1,10 @@
 /* eslint-env screeps */
 const Log = require('util.logger').withTag('harvester');
 const G = require('helper.guidance');
-const Say = require('service.say');
+const Say = require('behavior.say');
 const Paths = require('config.paths');
-const Pathing = require('service.pathing');
-const Sources = require('service.sources'); // source selection helpers
+const Pathing = require('behavior.pathing');
+const Sources = require('behavior.sources');
 const Threat = require('service.auto.detect');
 var roleHarvester = {
     /** @param {Creep} creep **/
