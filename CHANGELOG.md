@@ -2,6 +2,48 @@
 
 ## Commits
 
+### 🟢 fix: correct path for tutorials directory in strictify-equality script
+
+- 🟢 *Commit:* [32758d3a21a41b30238c5b7a7339e1d7d200d0bc](https://github.com/Ghostridr/ScreepsWorld/commit/32758d3a21a41b30238c5b7a7339e1d7d200d0bc)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-07 03:32:39
+- 📦 *Changed src/ JS files:*
+  - src/behavior/build.js
+  - src/behavior/construction.js
+  - src/behavior/haul.js
+  - src/behavior/heal.js
+  - src/behavior/pathing.js
+  - src/behavior/repair.js
+  - src/behavior/say.js
+  - src/behavior/sources.js
+  - src/catalog/guidance.js
+  - src/catalog/names.js
+  - src/config/colors.js
+  - src/config/constants.js
+  - src/config/debug.js
+  - src/config/paths.js
+  - src/config/scaler.js
+  - src/helper/guidance.js
+  - src/main.js
+  - src/manager/container.js
+  - src/manager/extension.js
+  - src/manager/road.js
+  - src/manager/spawner.js
+  - src/manager/tower.js
+  - src/manager/wall.js
+  - src/role/builder.js
+  - src/role/harvester.js
+  - src/role/hauler.js
+  - src/role/healer.js
+  - src/role/miner.js
+  - src/role/repairer.js
+  - src/role/upgrader.js
+  - src/service/auto.detect.js
+  - src/util/caching.js
+  - src/util/heartbeat.js
+  - src/util/logger.js
+  - src/util/mapper.js
+
 ### 🟢 Supposedly these were updated though no records of changes shown in diff?
 
 - 🟢 *Commit:* [608c45ede90a09a641232ded428053dbcac515e2](https://github.com/Ghostridr/ScreepsWorld/commit/608c45ede90a09a641232ded428053dbcac515e2)
