@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 feat(creeps): add registry and query helpers for creeps with tests
+
+- 🟢 *Commit:* [6e5e526b9244acae68ffb679121d64905d51b23e](https://github.com/Ghostridr/ScreepsWorld/commit/6e5e526b9244acae68ffb679121d64905d51b23e)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 04:35:27
+- 📦 *Changed src/ JS files:*
+  - src/service/creeps.js
+
 ### 🟢 fix(auto.detect): add null checks for room and find method in threat detection functions
 
 - 🟢 *Commit:* [09baaf657427758f6861a546cdb67e39094fa1a2](https://github.com/Ghostridr/ScreepsWorld/commit/09baaf657427758f6861a546cdb67e39094fa1a2)
