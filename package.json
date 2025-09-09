@@ -7,7 +7,8 @@
     "author": "Ghost Hackers",
     "license": "ISC",
     "dependencies": {
-        "chokidar": "^4.0.3"
+        "chokidar": "^4.0.3",
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
         "@eslint/js": "^9.9.0",
