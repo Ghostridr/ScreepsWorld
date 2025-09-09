@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 fix: use strict equality checks for target coordinates in position factory
+
+- 🟢 *Commit:* [76fb898929f5619b82741d76c96ce2bb62e4ee0f](https://github.com/Ghostridr/ScreepsWorld/commit/76fb898929f5619b82741d76c96ce2bb62e4ee0f)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 03:38:58
+- 📦 *Changed src/ JS files:*
+  - src/master.index.js
+
 ### 🟢 refactor: update service imports to behavior modules across various roles and managers
 
 - 🟢 *Commit:* [5027119bf4143f7f9acfcee20fc906d2c3b2b867](https://github.com/Ghostridr/ScreepsWorld/commit/5027119bf4143f7f9acfcee20fc906d2c3b2b867)
