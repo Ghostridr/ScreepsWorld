@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 fix(auto.detect): add null checks for room and find method in threat detection functions
+
+- 🟢 *Commit:* [09baaf657427758f6861a546cdb67e39094fa1a2](https://github.com/Ghostridr/ScreepsWorld/commit/09baaf657427758f6861a546cdb67e39094fa1a2)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 04:20:03
+- 📦 *Changed src/ JS files:*
+  - src/service/auto.detect.js
+
 ### 🟢 refactor(roles): consolidate creep role handling into a centralized Roles module
 
 - 🟢 *Commit:* [76b4b751d8a0d870980b0ff6e1352bed2445da15](https://github.com/Ghostridr/ScreepsWorld/commit/76b4b751d8a0d870980b0ff6e1352bed2445da15)
