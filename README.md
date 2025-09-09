@@ -1,3 +1,5 @@
+![ScreepsWorld Banner](assets/img/screeps_banner.png)
+
 # ScreepsWorld
 
 [![License](https://img.shields.io/badge/license-GNU%20AGPL%20v3-blue.svg?style=plastic)](LICENSE)
