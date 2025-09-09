@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 refactor(main): restructure module imports and enhance loop functionality
+
+- 🟢 *Commit:* [64d2d48b7d6b64c9970a49271da35a289e7437c7](https://github.com/Ghostridr/ScreepsWorld/commit/64d2d48b7d6b64c9970a49271da35a289e7437c7)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 03:47:09
+- 📦 *Changed src/ JS files:*
+  - src/main.js
+
 ### 🟢 fix: use strict equality checks for target coordinates in position factory
 
 - 🟢 *Commit:* [76fb898929f5619b82741d76c96ce2bb62e4ee0f](https://github.com/Ghostridr/ScreepsWorld/commit/76fb898929f5619b82741d76c96ce2bb62e4ee0f)
