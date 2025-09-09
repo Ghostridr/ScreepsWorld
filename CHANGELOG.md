@@ -2,6 +2,15 @@
 
 ## Commits
 
+### 🟢 feat(creeps): integrate Creeps registry for role dispatch and logging
+
+- 🟢 *Commit:* [c51e1371de81dc2926bed3ff7f641f566e0e7c02](https://github.com/Ghostridr/ScreepsWorld/commit/c51e1371de81dc2926bed3ff7f641f566e0e7c02)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 04:58:17
+- 📦 *Changed src/ JS files:*
+  - src/main.js
+  - src/service/creeps.js
+
 ### 🟢 feat(creeps): add registry and query helpers for creeps with tests
 
 - 🟢 *Commit:* [6e5e526b9244acae68ffb679121d64905d51b23e](https://github.com/Ghostridr/ScreepsWorld/commit/6e5e526b9244acae68ffb679121d64905d51b23e)
