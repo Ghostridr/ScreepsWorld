@@ -1,8 +1,11 @@
 const { main } = require('../src/master.index');
+const Creeps = require('../src/service/creeps');
 const factories = require('../factories/index.factory');
 
 describe('main.js integration', () => {
     beforeEach(() => {
+        require('../src/master.index').Creeps = Creeps;
+        global.Creeps = Creeps;
         global.Controller = factories.Controller;
         global.Creep = factories.Creep;
         global.Game = factories.Game;

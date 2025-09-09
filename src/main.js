@@ -18,6 +18,7 @@ var {
     Config,
     DebugCfg,
     Names,
+    Creeps = require('./master.index').Creeps || global.Creeps,
 } = require('./master.index');
 
 module.exports = {
@@ -157,11 +158,18 @@ module.exports = {
         if (mgrWall && typeof mgrWall.loop === 'function') mgrWall.loop();
 
         // Run creep roles
-        for (const name in Game.creeps) {
-            const creep = Game.creeps[name];
-            const role = creep.memory.role;
-            if (Roles[role] && typeof Roles[role].run === 'function') {
-                Roles[role].run(creep);
+        // Use Creeps registry for role dispatch
+        if (Creeps && typeof Creeps.logSummary === 'function') {
+            Creeps.logSummary(); // Log metrics for observability
+        }
+        for (const roomName in Game.rooms) {
+            // Defensive: skip if Creeps or inRoom is missing
+            if (!Creeps || typeof Creeps.inRoom !== 'function') continue;
+            for (const creep of Creeps.inRoom(roomName)) {
+                const role = creep.memory.role;
+                if (Roles[role] && typeof Roles[role].run === 'function') {
+                    Roles[role].run(creep);
+                }
             }
         }
 

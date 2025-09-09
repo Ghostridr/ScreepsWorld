@@ -1,9 +1,9 @@
 // service.creeps.js — Registry & query helpers for creeps
 // Responsibility: Centralize queries for creeps by role, room, and attributes. No direct game actions.
 
-const lodash = require('lodash'); // Renamed for lint compliance
-const Creeps = module.exports;
+const lodash = require('lodash');
 const Logger = require('util/logger');
+const Creeps = module.exports;
 
 /**
  * Get all creeps with a given role.
