@@ -2,6 +2,14 @@
 
 ## Commits
 
+### 🟢 feat(logger): add guidance catalog integration and enhance logging functionality with tests
+
+- 🟢 *Commit:* [42a2162ebee69269e041aeef154a75587437a45d](https://github.com/Ghostridr/ScreepsWorld/commit/42a2162ebee69269e041aeef154a75587437a45d)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 06:40:44
+- 📦 *Changed src/ JS files:*
+  - src/util/logger.js
+
 ### 🟢 feat(creeps): integrate Creeps registry for role dispatch and logging
 
 - 🟢 *Commit:* [c51e1371de81dc2926bed3ff7f641f566e0e7c02](https://github.com/Ghostridr/ScreepsWorld/commit/c51e1371de81dc2926bed3ff7f641f566e0e7c02)
