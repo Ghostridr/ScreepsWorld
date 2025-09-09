@@ -9,6 +9,7 @@ function objToPos(o) {
     return new RoomPosition(o.x, o.y, o.roomName);
 }
 function nearestHostileTo(room, anchor) {
+    if (!room || typeof room.find !== 'function') return null;
     var hostiles = room.find(FIND_HOSTILE_CREEPS) || [];
     if (!hostiles.length) return null;
     var best = null;
@@ -24,7 +25,7 @@ function nearestHostileTo(room, anchor) {
     return best ? { creep: best, range: bestD } : null;
 }
 function updateThreat(room) {
-    if (!room) return;
+    if (!room || typeof room.find !== 'function') return;
     var mem = (Memory.rooms[room.name] = Memory.rooms[room.name] || {});
     var spawns = room.find(FIND_MY_SPAWNS) || [];
     var anchor = spawns[0] || room.controller || { pos: new RoomPosition(25, 25, room.name) };
@@ -154,6 +155,7 @@ Threat.scan = function (room) {
     return updateThreat(room);
 };
 Threat.enforce = function (room) {
+    if (!room || typeof room.name !== 'string' || typeof room.find !== 'function') return;
     var t = (Memory.rooms[room.name] && Memory.rooms[room.name].threat) || null;
     if (!t || !t.active) return;
     var creeps = room.find(FIND_MY_CREEPS) || [];
