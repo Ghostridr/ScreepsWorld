@@ -7,13 +7,7 @@ var {
     mgrTower,
     mgrRoad,
     mgrWall,
-    Builder,
-    Harvester,
-    Hauler,
-    Healer,
-    Miner,
-    Repairer,
-    Upgrader,
+    Roles,
     Threat,
     HaulQ,
     BuildSvc,
@@ -163,35 +157,11 @@ module.exports = {
         if (mgrWall && typeof mgrWall.loop === 'function') mgrWall.loop();
 
         // Run creep roles
-        for (var name in Game.creeps) {
-            var creep = Game.creeps[name];
-            // Harvester role
-            if (creep.memory.role === 'harvester') {
-                Harvester.run(creep);
-            }
-            // Upgrader role
-            if (creep.memory.role === 'upgrader') {
-                Upgrader.run(creep);
-            }
-            // Builder role
-            if (creep.memory.role === 'builder') {
-                Builder.run(creep);
-            }
-            // Hauler role
-            if (creep.memory.role === 'hauler') {
-                Hauler.run(creep);
-            }
-            // Miner role
-            if (creep.memory.role === 'miner') {
-                Miner.run(creep);
-            }
-            // Healer role
-            if (creep.memory.role === 'healer') {
-                Healer.run(creep);
-            }
-            // Repairer role
-            if (creep.memory.role === 'repairer') {
-                Repairer.run(creep);
+        for (const name in Game.creeps) {
+            const creep = Game.creeps[name];
+            const role = creep.memory.role;
+            if (Roles[role] && typeof Roles[role].run === 'function') {
+                Roles[role].run(creep);
             }
         }
 
