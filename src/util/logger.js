@@ -93,6 +93,7 @@ function enabled(level) {
 }
 Log.setLevel = function (level) {
     const n = typeof level === 'number' ? level : LEVELS[String(level).toLowerCase()];
+    if (typeof Memory === 'undefined') return LEVELS.info;
     if (!Memory.log) Memory.log = {};
     Memory.log.level = n != null ? n : LEVELS.info;
     return Memory.log.level;
@@ -313,19 +314,29 @@ Log.construction = {
             if (!typeMap.has(ev.type)) typeMap.set(ev.type, []);
             typeMap.get(ev.type).push(ev);
         }
-        // Use centralized guidance catalog (catalog.guidance.js) keyed by reference code
-        let guidanceCatalog;
-        try {
-            guidanceCatalog = require('catalog.guidance');
-        } catch (e) {
-            guidanceCatalog = null;
-            console.log('Logger error loading catalog.guidance', e && e.stack ? e.stack : e);
+        // Guidance catalog dependency injection helper
+        let _guidanceCatalog = null;
+        Log.setGuidanceCatalog = function (catalog) {
+            _guidanceCatalog = catalog;
+        };
+
+        function getGuidanceCatalog() {
+            if (_guidanceCatalog) return _guidanceCatalog;
+            try {
+                return require('catalog.guidance');
+            } catch (e) {
+                console.log('Logger error loading catalog.guidance', e && e.stack ? e.stack : e);
+                return null;
+            }
         }
+
         const tipsFor = (code) => {
+            const guidanceCatalog = getGuidanceCatalog();
             if (!code || !guidanceCatalog) return [];
             const entry = guidanceCatalog[code];
             return entry && Array.isArray(entry.tips) ? entry.tips : [];
         };
+
         const ref = {
             road: { file: 'manager.road.js', code: 'ROAD_SITE' },
             container: { file: 'manager.container.js', code: 'CONT_SITE' },
@@ -343,6 +354,7 @@ Log.construction = {
             nuker: { file: 'manager.nuker.js', code: 'NUKER_SITE' },
             wall: { file: 'manager.wall.js', code: 'WALL_SITE' },
         };
+
         const verbose = !!(Memory.log && Memory.log.verboseSites);
         for (const [room, typeMap] of roomMap) {
             for (const [type, list] of typeMap) {
