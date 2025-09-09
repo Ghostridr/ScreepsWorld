@@ -316,10 +316,8 @@ I maintain a separate `CHANGELOG.md` for each server within **ScreepsWorld**. Yo
      - 📖 [CONTRIBUTING.md](CONTRIBUTING.md)
      - 📖 [LICENSE](LICENSE)
    - 📁 [NewbieLand](screeps_newbieland_net___21025)
-     - 📜 [CHANGELOG.md](screeps_newbieland_net___21025/CHANGELOG.md)
      - 📖 [README.md](screeps_newbieland_net___21025/README.md)
    - 📁 [Training Server](screeps.com)
-     - 📜 [CHANGELOG.md](screeps.com/CHANGELOG.md)
      - 📖 [README.md](screeps.com/README.md)
 
 ---
