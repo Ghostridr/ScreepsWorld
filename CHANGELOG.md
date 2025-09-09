@@ -2,6 +2,15 @@
 
 ## Commits
 
+### 🟢 refactor(roles): consolidate creep role handling into a centralized Roles module
+
+- 🟢 *Commit:* [76b4b751d8a0d870980b0ff6e1352bed2445da15](https://github.com/Ghostridr/ScreepsWorld/commit/76b4b751d8a0d870980b0ff6e1352bed2445da15)
+- 👤 *Author:* Ghostridr
+- 📅 *Date:* 2025-09-09 03:59:59
+- 📦 *Changed src/ JS files:*
+  - src/driver/roles.js
+  - src/main.js
+
 ### 🟢 refactor(main): restructure module imports and enhance loop functionality
 
 - 🟢 *Commit:* [64d2d48b7d6b64c9970a49271da35a289e7437c7](https://github.com/Ghostridr/ScreepsWorld/commit/64d2d48b7d6b64c9970a49271da35a289e7437c7)
